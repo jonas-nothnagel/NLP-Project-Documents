@@ -7,37 +7,40 @@ import os.path as path, sys
 current_dir = path.dirname(path.abspath(getsourcefile(lambda:0)))
 sys.path.insert(0, current_dir[:current_dir.rfind(path.sep)])
 import joblib
-import pickle
+import pickle5 as pickle
+#import pickle
 import time
+import plotly.express as px
+from plotly.subplots import make_subplots
+import plotly.graph_objects as go
+import matplotlib.pyplot as plt
 from PIL import Image
+import torch
+from transformers import pipeline
+from transformers import AutoTokenizer, AutoModelForQuestionAnswering
+from transformers import AutoModelForSequenceClassification, AutoTokenizer
 
 #fuzzy search
 from fuzzywuzzy import fuzz
 from fuzzywuzzy import process
 
-
 #eli5
-import eli5
-from eli5 import explain_weights, explain_prediction, show_prediction
-from eli5.formatters import format_as_html, format_as_text, format_html_styles
+from eli5 import show_prediction
 
 #Whoosh (ElasticSearch)
-from whoosh.index import create_in
 from whoosh.index import open_dir
-from whoosh.fields import Schema, TEXT
 from whoosh.qparser import MultifieldParser,OrGroup, query
 from whoosh import scoring
 from whoosh import highlight
-        #load indexed document storage and specify whoosh:
-ix = open_dir("../whoosh")
+#load indexed document storage and specify whoosh:
+ix = open_dir("../whoosh/whoosh")
 weighting_type = scoring.BM25F()
-fields = ['all_text']
+fields = ['all_text_clean']
 og = OrGroup.factory(0.9) #bonus scaler
 parser = MultifieldParser(fields, ix.schema, group = og)
 
 #streamlit
 import streamlit as st
-from annotated_text import annotated_text
 import SessionState
 from load_css import local_css
 local_css("style.css")
@@ -51,12 +54,25 @@ def selectbox_with_default(text, values, default=DEFAULT, sidebar=False):
 import src.clean_dataset as clean
 #import src.vectorize_embed as em
 
+#experimental Transformer based approaches: SLOW
+def zero_shot_classification():
+    
+    nli_model = AutoModelForSequenceClassification.from_pretrained('joeddav/xlm-roberta-large-xnli')
+    tokenizer = AutoTokenizer.from_pretrained('joeddav/xlm-roberta-large-xnli')
+    
+    return nli_model, tokenizer
+
+@st.cache
+def neuralqa():
+    
+    tokenizer = AutoTokenizer.from_pretrained("bert-large-uncased-whole-word-masking-finetuned-squad", 
+                                              use_fast=False)
+    model = AutoModelForQuestionAnswering.from_pretrained("bert-large-uncased-whole-word-masking-finetuned-squad", 
+                                                          return_dict=False)
+
+    return tokenizer, model
+
 sys.path.pop(0)
-
-
-
-
-
 
 #%%
 #1. load in complete transformed and processed dataset for pre-selection and exploration purpose
@@ -65,9 +81,11 @@ df_columns = df.drop(columns=['PIMS_ID', 'all_text_clean', 'all_text_clean_spacy
  'title',
  'leading_country',
  'grant_amount',
- 'country_code'])
+ 'country_code',
+ 'lon',
+ 'lat'])
+    
 to_match = df_columns.columns.tolist()
-
 
 #2. load parent dict
 with open("../data/processed/parent_dict.pkl", 'rb') as handle:
@@ -83,37 +101,85 @@ with open("../data/processed/tfidf_only_f1.pkl", 'rb') as handle:
 
 #5. Load all categories as list:
 with open("../data/processed/all_categories_list.pkl", 'rb') as handle:
-    all_categories = pickle.load(handle) 
+    all_categories = pickle.load(handle)
+
+#6. Load df with targets:
+df_targets = pd.read_csv('../data/processed/taxonomy_final_targets.csv')
+df_columns = df_targets.drop(columns=['PIMS_ID', 'all_text_clean', 'all_text_clean_spacy',  'hyperlink',
+ 'title',
+ 'leading_country',
+ 'grant_amount',
+ 'country_code',
+ 'lon',
+ 'lat'])
     
+to_match_targets = df_columns.columns.tolist()
+    
+#sort list
+all_categories = sorted(all_categories)    
 #%%
 session = SessionState.get(run_id=0)
-    
+
+
 #%%
-#title page
+#title start page
 st.title('Machine Learning for Nature Climate Energy Portfolio')
 
-#title sidebar
-image = Image.open('logo.png')
-st.sidebar.image(image, width=150)
+sdg = Image.open('logo.png')
+st.sidebar.image(sdg, width=200)
 st.sidebar.title('Navigation')
+
+
 #%%
 # app decision:
 app_selection = st.sidebar.selectbox('What application would you like to test?', 
-                             ('', 'Elastic Search', 'Fuzzy Structured Search', 'ML Classification'),
-                             format_func=lambda x: 'Select an Option' if x == '' else x)
+                             ('', 'Elastic Search', 'Fuzzy Structured Search', 'ML Classification', 'Zero-Shot Classification',
+                              'Neural Question Answering'),
+                             format_func=lambda x: 'Default Data Exploration' if x == '' else x)
 
+#%%
 # define containers:
 container_1 = st.empty()  
 container_2 = st.empty()  
 container_3 = st.empty()  
+container_4 = st.empty()
+container_5 = st.empty()
+container_6 = st.empty()
 
 #%%
-# Sidebar category choosing
+#explore data:
+if app_selection == '':
+    container_2 = st.empty()  
+    container_3 = st.empty()  
+    container_4 = st.empty()    
+    container_5 = st.empty()
+    container_6 = st.empty()
+    
+    with container_1.beta_container():
+        st.write('## Explore the portfolio with new taxonomy:')
+        options = st.multiselect('Select categories from the taxonomy:', 
+                                              all_categories, format_func=lambda x: 'Select a category' if x == '' else x)
+        
+        
+        filters = []
+        if options:
+            for k in options:
+                condition =(k,1)
+                filters.append(condition)
+            f = '{0[0]} == {0[1]}'.format
+            result_df = df.query(' & '.join(f(t) for t in filters))
+            st.write('Relevant Project IDs:', result_df[['PIMS_ID', 'title', 'leading_country', 'grant_amount']], "Number of projects:", len(result_df))
+            result_df = result_df.loc[result_df['lat'] != 51.0834196]
+            st.map(result_df)
+    
+#%%
+#Sidebar category choosing
 
 if app_selection == 'ML Classification':
     
     items = [k  for  k in  parents.keys()]
     items.insert(0,'')
+    
     option = st.sidebar.selectbox('Select a category:', items, format_func=lambda x: 'Select a category' if x == '' else x)
     if option:
         st.sidebar.write('You selected:', option)
@@ -123,7 +189,7 @@ if app_selection == 'ML Classification':
             st.sidebar.write(i)
         st.sidebar.markdown("**Further Choices**")
         
-        agree = st.sidebar.checkbox(label='Would you like to display and predict sub-categories?', value = False)            
+        agree = st.sidebar.checkbox(label='Would you like to display and predict sub-categories of your choice?', value = False)            
         if agree:
             sub_option = st.sidebar.selectbox('Select a category:', parents[option], format_func=lambda x: 'Select a category' if x == '' else x)
             if sub_option:
@@ -134,24 +200,35 @@ if app_selection == 'ML Classification':
         else:
             categories = parents[option]
             
-        agree = st.sidebar.checkbox(label='Would you like to predict the whole taxonomy?', value = False)            
+        #choose one category from all:
+        agree = st.sidebar.checkbox(label='Would you like to predict specific categories?', value = False)            
         if agree:
-            
-            categories = all_categories                  
-        else:
-            categories = parents[option]
-            
+            all_options = st.sidebar.multiselect('Select a category:', all_categories, format_func=lambda x: 'Select a category' if x == '' else x)
+            if all_options:
+                st.sidebar.markdown("**You've chosen:**")
+                for i in all_options:
+                    st.sidebar.write(i)                
+                categories = all_options
+
+        # predict each category:             
+        agree = st.sidebar.checkbox(label='Would you like to predict the whole taxonomy?', value = False, key= "key1")            
+        if agree:
+            categories = all_categories                              
     else:
         st.warning('No category is selected')
+        
 #%%
 #Container 1:  
 if app_selection == 'ML Classification':
     
-    # delete containers:
-    container_2 = st.empty()  
+    #delete containers:
+    container_1 = st.empty()  
     container_3 = st.empty()  
+    container_4 = st.empty()    
+    container_5 = st.empty()
+    container_6 = st.empty()
     
-    with container_1.beta_container():
+    with container_2.beta_container():
         
         st.write('## Frontend Application that takes text as input and outputs classification decision.')
         
@@ -164,13 +241,12 @@ if app_selection == 'ML Classification':
         else:
             pass
         
-        # Prediction Function
         text_input = st.text_input('Please Input your Text:')
         
+        #define lists
         name = []
         hat = []
-        number = []
-        
+        number = []        
         top_5 = []
         last_5 = []
         top_5_10 = []
@@ -181,6 +257,7 @@ if app_selection == 'ML Classification':
             
             with placeholder.beta_container():
                 with st.spinner('Load Models and Predict...'):
+                    
                     for category in categories:
                         
                         # take only models with over 20 training datapoints
@@ -276,7 +353,7 @@ if app_selection == 'ML Classification':
                                     element = st.write("No with Confidence:", y_prob[0][0].round(2)*100, "%")
                                     
 
-            #time.sleep(2)
+            time.sleep(3)
             placeholder.empty()
             if name != []:    
                 t = "<div> <span class='highlight green'>Suggested Categories:</div>"
@@ -325,101 +402,289 @@ if app_selection == 'ML Classification':
                 t = "<div> <span class='highlight red'>Not enough confidence in any category.</div>"
                 st.markdown(t, unsafe_allow_html=True)        
 
+
+
+   
+# add elastic search after fuzzy structured search.
+                                    
 if app_selection == 'Fuzzy Structured Search':
     
     container_1 = st.empty()  
-    container_3 = st.empty()  
-    with container_2.beta_container():
+    container_2 = st.empty()  
+    container_4 = st.empty()
+    container_5 = st.empty()   
+    container_6 = st.empty()
+    
+    with container_3.beta_container():
         
-        input_query = st.text_input('Please Input your Text:')
+        input_query = st.text_input('Please Input your Query: (works best for keywords - coral reef, agroforestry, etc)')
         
         if input_query != '':
-            #words = input_query.split()
-            #query = words[-1]
-            matches = process.extract(input_query, to_match, limit = 5)
+            matches = process.extract(input_query, to_match_targets, limit = 15)
             match_string = []
             for match in matches:
                 for m in match:
                     if type(m) == str:
                         match_string.append(m)
             
-            option = st.selectbox("These are the most likely categories. Select:" ,match_string)
-            st.write('you selected', option)
+            options = st.multiselect('These are the most likely categories. Select:', 
+                match_string, format_func=lambda x: 'Select a category' if x == '' else x)
+           
+            filters = []
+            if options:
+                for k in options:
+                    condition =(k,1)
+                    filters.append(condition)
+                f = '{0[0]} == {0[1]}'.format
                 
+                col1, col2 = st.beta_columns(2)
+                and_search = col1.checkbox(label='AND', value = False)            
+                if and_search:                
+                    result_df = df_targets.query(' & '.join(f(t) for t in filters))
+                    st.write('Relevant Project IDs:', result_df[['PIMS_ID', 'title', 'leading_country', 'grant_amount']], "Number of projects:", len(result_df))
+                    result_df = result_df.loc[result_df['lat'] != 51.0834196]
+                    #st.map(result_df)
+                or_search = col2.checkbox(label='OR', value = True)
+                if or_search:
+                    result_df = df_targets.query(' or '.join(f(t) for t in filters))
+                    st.write('Relevant Project IDs:', result_df[['PIMS_ID', 'title', 'leading_country', 'grant_amount']], "Number of projects:", len(result_df))
+                    result_df = result_df.loc[result_df['lat'] != 51.0834196]
+                    #st.map(result_df)
+            
+#            option = st.selectbox("These are the most likely categories. Select:" ,match_string)
+#            st.write('you selected', option)
+            
+#            if option in df.columns.tolist():                
+#                result = df.loc[df[option] == 1]
+#                result = result.reset_index(drop=True)
+#                result = result[['PIMS_ID', 'title','leading_country', 'grant_amount', 'hyperlink', 'lon', 'lat']]   
+#                summary = dict(zip(result.PIMS_ID.tolist(),result.hyperlink.tolist()))
+#                
+#                st.write('Relevant Project IDs:', result[['PIMS_ID', 'title', 'leading_country', 'grant_amount']], "Number of projects:", len(result))
+                pims_structured = result_df.PIMS_ID.tolist()
                 
-            if option in df.columns.tolist():                
-                result = df.loc[df[option] == 1]
-                result = result.reset_index(drop=True)
-                result = result[['PIMS_ID', 'title', 'hyperlink', 'lon', 'lat']]   
-                summary = dict(zip(result.PIMS_ID.tolist(),result.hyperlink.tolist()))
-                
-                # make clickable and link to document:
-                st.write('Relevant Project IDs:', result[['PIMS_ID', 'title']], "Number of projects:", len(result))
-                
-                pims_structured = result.PIMS_ID.tolist()
-                # compare with ElasticSearch:
-                q = parser.parse(input_query)
-                
-                pims = []
-                with ix.searcher(weighting = weighting_type) as s:
-                    el_results = s.search(q, limit = 1000)
-                    el_results.fragmenter = highlight.SentenceFragmenter()
-                    el_results.formatter = highlight.UppercaseFormatter()
-                    for res in el_results:
-                        pims.append(res['PIMS_ID'])
-                        pims = [ int(x) for x in pims ]
-                        length = len(pims)
-
-                intersections = list(set(pims_structured) & set(pims))
-                intersection_ratio = len(intersections)/len(pims_structured)
-                st.write('Number of intersections with ElasticSearch results:', len(intersections))
-                st.write('Percentage of relevant projects found by ElasticSearch:', round(intersection_ratio,2)*100, "%")
-                
-                result = result.loc[result['lat'] != 51.0834196]
-                st.map(result)
-
-
-                                       
-            else:
-                st.write('No good matches')
-
-            # options = st.multiselect("Combine Categories:" ,match_string)
-            # st.write('you selected', options)
-
+                if len(pims_structured) > 0:
+                    
+                    #Compare with ElasticSearch:
+                    q = parser.parse(input_query)
+                    
+                    pims = []
+                    with ix.searcher(weighting = weighting_type) as s:
+                        el_results = s.search(q, limit = 1000)
+                        el_results.fragmenter = highlight.SentenceFragmenter()
+                        el_results.formatter = highlight.UppercaseFormatter()
+                        for res in el_results:
+                            pims.append(res['PIMS_ID'])
+                            pims = [ int(x) for x in pims ]
+                            length = len(pims)
+    
+                    intersections = list(set(pims_structured) & set(pims))
+                    intersection_ratio = len(intersections)/len(pims_structured)
+                    recall = len(intersections)/len(pims)
+                    st.write('Number of intersections with ElasticSearch results:', len(intersections))
+                    #st.write('Percentage of relevant projects found by ElasticSearch:', round(intersection_ratio,2)*100, "%")
+                    st.write('Recall of ElasticSearch:', round(recall,2)*100, "%")
+                    st.map(result_df)
                 
 if app_selection == 'Elastic Search':
     
     container_1 = st.empty()  
     container_2 = st.empty()  
-    with container_2.beta_container():
+    container_3 = st.empty()  
+    container_5 = st.empty()
+    container_6 = st.empty()
+    
+    with container_4.beta_container():
         
 
         input_query = st.text_input('Please Input your Text:')
-        returns = st.slider('How many documents you want to return?', 1, 100)
+        returns = st.slider('How many documents you want to return?', 1, 500)
         
         q = parser.parse(input_query)
 
 
         pims = []
         title = []
+        grant_amount = []
+        leading_country = []
         with ix.searcher(weighting = weighting_type) as s:
           results = s.search(q, limit = returns)
           results.fragmenter = highlight.SentenceFragmenter()
           results.formatter = highlight.UppercaseFormatter()
+          
           for res in results:
              pims.append(res['PIMS_ID'])
              pims = [ int(x) for x in pims ]
              title.append(res['title'])
+             grant_amount.append(res['grant_amount'])             
+             leading_country.append(res['leading_country'])
         result = dict(zip(pims, title))
         result = pd.DataFrame(result.items(), columns=['PIMS_ID', 'title'])
+        result= result.assign(leading_country=leading_country)
+        result= result.assign(grant_amount=grant_amount)
+        
         result['PIMS_ID'] = result['PIMS_ID'].astype(int)
         mapping = df[['PIMS_ID', 'lon', 'lat']]
         result = result.merge(mapping, how='left', on=['PIMS_ID'])
         
-        st.write('Relevant Project IDs:', result[['PIMS_ID', 'title']], "Number of projects:", len(result))
+        st.write('Relevant Project IDs:', result[['PIMS_ID', 'title', 'leading_country', 'grant_amount']], "Number of projects:", len(result))
                 
         result = result.loc[result['lat'] != 51.0834196]
         st.map(result)
+        
+if app_selection == "Zero-Shot Classification":
+    
+    container_1 = st.empty()  
+    container_2 = st.empty()  
+    container_3 = st.empty()  
+    container_4 = st.empty()
+    container_6 = st.empty()
+    
+    with container_5.beta_container():
+        st.write("Try unsupervised text classification leveraging state-of-the-Art language models. WARNING: SLOW")
+        sequence = st.text_input('Please Specify your sentence/text:')
+        
+        if sequence != "":
+            st.write("Sequences are posed as the premises and topic labels are turned into premises, i.e. biodiversity -> This text is about biodiversity.")
+            candidate_labels = st.text_input('Now please specify categories (comma seperated)')
+    
+            if candidate_labels != "":
+                candidate_labels = candidate_labels.split(",")
+        
+
+                with st.spinner('Load Weights of Transformer model...'):
+                    nli_model, tokenizer = zero_shot_classification()
+                
+                    premise = sequence
+                    results = []
+                    for label in candidate_labels:
+                        hypothesis = f'This example is {label}.'
+                        
+                        # run through model pre-trained on MNLI
+                        x = tokenizer.encode(premise, hypothesis, return_tensors='pt',
+                                             truncation_strategy='only_first')
+                        logits = nli_model(x)[0]
+            
+                        entail_contradiction_logits = logits[:,[0,2]]
+                        probs = entail_contradiction_logits.softmax(dim=1)
+                        prob_label_is_true = probs[:,1]
+                        results.append(round(prob_label_is_true.item(),3))
+        
+                    result = dict(zip(candidate_labels, results))
+                    result = pd.DataFrame({'labels': candidate_labels, 'scores': results})
+                    
+                    state_total_graph = px.bar(
+                    result, 
+                    x='labels',
+                    y='scores',
+                    color ="labels")
+                    st.plotly_chart(state_total_graph)                    
+
+        
+                    
+# 
+if app_selection == "Neural Question Answering":
+    
+    container_1 = st.empty()  
+    container_2 = st.empty()  
+    container_3 = st.empty()  
+    container_4 = st.empty()
+    container_5 = st.empty()       
+    
+    with container_6.beta_container():
+        st.write("Try Neural Question Answering. PROTOTYPE.")
+        
+        examples=["", 
+                  "what's the problem with the artibonite river basin?", 
+                  "what are threads for the machinga and mangochi districts of malawi?",
+                  "how can we deal with rogue swells?"]
+        
+        example = st.selectbox('Examples:', [k for k in examples], format_func=lambda x: 'Select an Example' if x == '' else x)
+              
+        question = st.text_input('Try own question (be as specific as possible):')
+        
+        #load and split dataframe:
+        splitted = clean.split_at_length(df, 'all_text_clean', 500)
+        
+        if example != "":
+            
+            question = example
+            
+        if question != "":
+            
+            question = question
+            
+            with st.spinner('Running ElasticSearch to find relevant documents...'):
+                ix = open_dir("../whoosh/split")
+                weighting_type = scoring.BM25F()
+                fields = ['text']
+                og = OrGroup.factory(0.9) #bonus scaler
+                parser = MultifieldParser(fields, ix.schema, group = og)
+                
+                q = parser.parse(question)
+                
+                pims = []
+                all_text = []
+                #title = []
+                #grant_amount = []
+                #leading_country = []
+                
+                with ix.searcher(weighting = weighting_type) as s:
+                  results = s.search(q, limit = 1)
+                  results.fragmenter = highlight.SentenceFragmenter()
+                  results.formatter = highlight.UppercaseFormatter()
+                  
+                  for res in results:
+                     pims.append(res['PIMS_ID'])
+                     all_text.append(res['text'])
+                     pims = [ int(x) for x in pims ]
+                     #title.append(res['title'])
+                     #grant_amount.append(res['grant_amount'])             
+                     #leading_country.append(res['leading_country'])
+                     
+                result = dict(zip(pims, all_text))
+                result = pd.DataFrame(result.items(), columns=['PIMS_ID', 'text'])
+                #result= result.assign(text=all_text)
+                #result= result.assign(leading_country=leading_country)
+                #result= result.assign(grant_amount=grant_amount)
+                
+                result['PIMS_ID'] = result['PIMS_ID'].astype(int)
+                
+                #texts = []
+                #for i in result.text:
+                    #texts.append(str(i))
+                
+                text = str(result.text.iloc[0])
+                
+                st.write(result)
+            
+                if text != "":
+                    with st.spinner('Load Weights of Transformer model...'):
+                        tokenizer, model = neuralqa()
+                            
+                        inputs = tokenizer.encode_plus(question, text, add_special_tokens=True, return_tensors="pt")
+                        input_ids = inputs["input_ids"].tolist()[0]
+        
+                        text_tokens = tokenizer.convert_ids_to_tokens(input_ids)
+                        answer_start_scores, answer_end_scores = model(**inputs)
+        
+                        answer_start = torch.argmax(answer_start_scores)  # Get the most likely beginning of answer with the argmax of the score
+                        answer_end = torch.argmax(answer_end_scores) + 1  # Get the most likely end of answer with the argmax of the score
+        
+                        answer = tokenizer.convert_tokens_to_string(tokenizer.convert_ids_to_tokens(input_ids[answer_start:answer_end]))
+        
+                        st.write(f"Question: {question}")
+                        
+                        st.write(f"Answer: {answer}\n")
+                        
+                        st.markdown("**Context:**")
+                        
+                        green = "<span class='highlight green'>"+answer+"</span>"
+                        
+                        text = text.replace(answer, green)
+                        text = "<div>"+text+"</div>"
+                        st.markdown(text, unsafe_allow_html=True)
+                        
 #%%
 st.write('           ')
 st.write('           ')

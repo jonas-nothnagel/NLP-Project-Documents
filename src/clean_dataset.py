@@ -30,7 +30,7 @@ from nltk.corpus import stopwords
 import regex as re
 import string
 from itertools import chain
-
+from textwrap import wrap
 from langdetect.lang_detect_exception import LangDetectException
 from langdetect import detect_langs
 
@@ -435,3 +435,19 @@ def detect_lang(dataframe, column, lang_to_detect, printing = False, translate =
  
     
     return dataframe
+
+
+def split_at_length(dataframe, column, length):
+    wrapped = []
+    for i in dataframe[column]:
+        wrapped.append(wrap(i, length))
+
+    dataframe = dataframe.assign(wrapped=wrapped)
+    dataframe['wrapped'] = dataframe['wrapped'].apply(lambda x: ', '.join(map(str, x)))
+
+    splitted = pd.concat([pd.Series(row['PIMS_ID'], row['wrapped'].split(", "), )              
+                        for _, row in dataframe.iterrows()]).reset_index()
+
+    splitted = splitted.rename(columns={"index": "text", 0: "PIMS_ID"})
+    
+    return splitted

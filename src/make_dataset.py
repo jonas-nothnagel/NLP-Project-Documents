@@ -32,8 +32,9 @@ import src.make_dataset_PIMS_API_neural_translate as api_neural
 import os
 import sys
 sys.path.insert(0, os.path.abspath(os.path.join('..', 'src')))
-from easynmt import EasyNMT
-model = EasyNMT('opus-mt')
+
+#from easynmt import EasyNMT
+#model = EasyNMT('opus-mt')
 #%%
 
 def import_raw_data(tagging_table):
