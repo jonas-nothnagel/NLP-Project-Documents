@@ -5,7 +5,7 @@ Data is not pushed - repo only for open deployment experimentation
 Working Repo for building a set of models to automate the classification of project log-frames to a comprehensive taxonomy.
 
 ## Classification Experiments
-Classify documents/text to over 300 categories of the newly introduced taxonomy:
+Classify documents/text to over 300 categories of the newly introduced taxonomy and obtain detailed "black-box-algorithm" explanation of your prediction.
 
 [![Classification](https://github.com/SDG-AI-Lab/NCE_Document_Classification/blob/master/img/classification.JPG)](#features)
 
