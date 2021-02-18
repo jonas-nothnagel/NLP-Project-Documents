@@ -1,3 +1,6 @@
+# Note
+Data is not pushed - repo only for open deployment experimentation 
+
 # NCE Document Classification
 Working Repo for building a set of models to automate the classification of project log-frames to a comprehensive taxonomy.
 
