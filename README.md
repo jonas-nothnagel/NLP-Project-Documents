@@ -19,7 +19,7 @@ And for older experiments:
 ## Structured Search VS. ElasticSearch
 Try out fuzzy structured search and compare to elastic Search Results:
 
-[![Classification](https://github.com/SDG-AI-Lab/NCE_Document_Classification/blob/master/img/comparison.JPG)](#features)
+[![Classification](https://github.com/SDG-AI-Lab/NCE_Document_Classification/blob/master/img/whoosh.png)](#features)
 
 ## Information Extraction 
 
