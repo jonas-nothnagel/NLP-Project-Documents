@@ -13,7 +13,7 @@ tqdm==4.56.2
 joblib==1.0.1
 plotly==4.14.3
 spacy==3.0.1
-https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-2.3.1/en_core_web_sm-2.3.1.tar.gz#egg=en_core_web_sm
+https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.0.0/en_core_web_sm-3.0.0.tar.gz#egg=en_core_web_sm
 requests==2.25.1
 matplotlib==3.3.4
 symspellpy==6.7.0
