@@ -17,9 +17,19 @@ And for older experiments:
 * https://console.paperspace.com/tesl8wodi/notebook/pr1zmah40
 
 ## Structured Search VS. ElasticSearch
-Try out fuzzy structured search and compare to elastic Search Results:
+Try out fuzzy structured search (with AND/OR) and compare to Elastic Search results:
 
-[![Classification](https://github.com/SDG-AI-Lab/NCE_Document_Classification/blob/master/img/comparison.JPG)](#features)
+[![Whoosh](https://github.com/jonas-nothnagel/NLP-Project-Documents/blob/main/img/whoosh.png)](#features)
+
+## Neural QAlari
+Basic Neural QA pipeline that uses whoosh for document similarty and a pretrained transformer model for extractive QA. Highlighted in html. 
+
+[![QA](https://github.com/jonas-nothnagel/NLP-Project-Documents/blob/main/img/neural_qa.png)](#features)
+
+## Zero Shot Classification
+Try an implementation of huggingace's Zero-Shot classification model:
+[![QA](https://github.com/jonas-nothnagel/NLP-Project-Documents/blob/main/img/zero_shot.png)](#features)
+
 
 ## Information Extraction 
 
