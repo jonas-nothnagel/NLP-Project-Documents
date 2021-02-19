@@ -21,14 +21,14 @@ Try out fuzzy structured search (with AND/OR) and compare to Elastic Search resu
 
 [![Whoosh](https://github.com/jonas-nothnagel/NLP-Project-Documents/blob/main/img/whoosh.png)](#features)
 
-## Neural QAlari
-Basic Neural QA pipeline that uses whoosh for document similarty and a pretrained transformer model for extractive QA. Highlighted in html. 
+## Neural Question Answering:
+Basic Neural QA pipeline that uses whoosh for document similarity and a pre-trained transformer model for extractive QA. Highlighted in html. 
 
 [![QA](https://github.com/jonas-nothnagel/NLP-Project-Documents/blob/main/img/neural_qa.png)](#features)
 
 ## Zero Shot Classification
-Try an implementation of huggingace's Zero-Shot classification model:
-[![QA](https://github.com/jonas-nothnagel/NLP-Project-Documents/blob/main/img/zero_shot.png)](#features)
+Try an implementation of hugginface's Zero-Shot classification model:
+[![zero_shot](https://github.com/jonas-nothnagel/NLP-Project-Documents/blob/main/img/zero_shot.png)](#features)
 
 
 ## Information Extraction 
