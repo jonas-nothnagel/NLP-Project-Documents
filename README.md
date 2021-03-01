@@ -17,7 +17,7 @@ And for older experiments:
 * https://console.paperspace.com/tesl8wodi/notebook/pr1zmah40
 
 ## Structured Search VS. ElasticSearch
-Try out fuzzy structured search (with AND/OR) and compare to Elastic Search results:
+Try out contextual structured search (with AND/OR) and compare to Elastic Search results. Here you can choose between fuzzy string matching and neural sentence transformers for contextual embeddings.
 
 [![Whoosh](https://github.com/jonas-nothnagel/NLP-Project-Documents/blob/main/img/whoosh.png)](#features)
 
