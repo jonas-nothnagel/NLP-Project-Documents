@@ -1,5 +1,24 @@
-# Note
-Data is not pushed - repo only for open deployment experimentation 
+# Setup
+
+For streamlit I suggest to use > Python 3.7.
+
+Clone the repo to your local machine:
+```
+git clone https://github.com/jonas-nothnagel/NLP-Project-Documents
+```
+
+Install the dependencies in a virtual environment:
+```
+python3.7 -m venv venv
+source venv/bin/activate
+pip install --upgrade pip setuptools
+pip install -r requirements.txt
+```
+
+On the first run, the app will download several transformer models. To start the application, navigate to the streamlitfolder and simply run:
+```
+streamlit run app.py
+```
 
 # NCE Document Classification
 Working Repo for building a set of models to automate the classification of project log-frames to a comprehensive taxonomy.
