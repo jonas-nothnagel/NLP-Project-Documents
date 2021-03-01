@@ -39,7 +39,7 @@ parser = MultifieldParser(fields, ix.schema, group = og)
 import streamlit as st
 import SessionState
 from load_css import local_css
-local_css("style.css")
+local_css("/style.css")
 
 DEFAULT = '< PICK A VALUE >'
 def selectbox_with_default(text, values, default=DEFAULT, sidebar=False):
