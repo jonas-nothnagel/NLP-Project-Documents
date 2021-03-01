@@ -10,7 +10,7 @@ requests==2.25.1
 joblib==1.0.1
 numpy==1.19.2
 scipy==1.6.0
-en_core_web_sm==3.0.0
+https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.0.0/en_core_web_sm-3.0.0.tar.gz#egg=en_core_web_sm
 symspellpy==6.7.0
 torch==1.7.1
 fuzzywuzzy==0.18.0
