@@ -39,7 +39,7 @@ parser = MultifieldParser(fields, ix.schema, group = og)
 import streamlit as st
 import SessionState
 from load_css import local_css
-local_css("/style.css")
+local_css(style.css)
 
 DEFAULT = '< PICK A VALUE >'
 def selectbox_with_default(text, values, default=DEFAULT, sidebar=False):
@@ -139,7 +139,7 @@ session = SessionState.get(run_id=0)
 #title start page
 st.title('Machine Learning for Nature Climate Energy Portfolio')
 
-sdg = Image.open('logo.png')
+sdg = Image.open(logo.png)
 st.sidebar.image(sdg, width=200)
 st.sidebar.title('Navigation')
 
