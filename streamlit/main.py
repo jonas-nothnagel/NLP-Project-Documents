@@ -294,7 +294,7 @@ if app_selection == 'ML Classification':
                           
                             if model_selection == 'TFIDF':
 
-                                tfidf_vectorizer = joblib.load('../models/tf_idf/tf_idf_only/'+category+'_'+'vectorizer.sav')        
+                                tfidf_vectorizer = joblib.load('./models/tf_idf/tf_idf_only/'+category+'_'+'vectorizer.sav')        
                                 fnames = tfidf_vectorizer.get_feature_names()
                                 
                                 vector_df = tfidf_vectorizer.transform(clean_df)
@@ -343,13 +343,13 @@ if app_selection == 'ML Classification':
                             if model_selection == 'TFIDF + LSA Dimension Reduction':
 
                                 
-                                tfidf_vectorizer = joblib.load('../models/tf_idf/tf_idf_lsa/'+category+'_'+'vectorizer.sav')        
-                                lsa = joblib.load('../models/tf_idf/tf_idf_lsa/'+category+'_'+'lsa.sav')
+                                tfidf_vectorizer = joblib.load('./models/tf_idf/tf_idf_lsa/'+category+'_'+'vectorizer.sav')        
+                                lsa = joblib.load('./models/tf_idf/tf_idf_lsa/'+category+'_'+'lsa.sav')
                                 
                                 vector_df = tfidf_vectorizer.transform(clean_df)
                                 vector_df = lsa.transform(vector_df)
                         
-                                clf = joblib.load('../models/tf_idf/tf_idf_lsa/'+category+'_'+'model.sav')
+                                clf = joblib.load('./models/tf_idf/tf_idf_lsa/'+category+'_'+'model.sav')
                                 y_hat = clf.predict(vector_df)
                                 y_prob = clf.predict_proba(vector_df)
                                 
@@ -634,7 +634,7 @@ if app_selection == "Neural Question Answering":
             question = question
             
             with st.spinner('Running ElasticSearch to find relevant documents...'):
-                ix = open_dir("../whoosh/split")
+                ix = open_dir("./whoosh/split")
                 weighting_type = scoring.BM25F()
                 fields = ['text']
                 og = OrGroup.factory(0.9) #bonus scaler
