@@ -90,7 +90,7 @@ sys.path.pop(0)
 
 #%%
 #1. load in complete transformed and processed dataset for pre-selection and exploration purpose
-df = pd.read_csv('../data/processed/taxonomy_final.csv')
+df = pd.read_csv('./data/processed/taxonomy_final.csv')
 df_columns = df.drop(columns=['PIMS_ID', 'all_text_clean', 'all_text_clean_spacy',  'hyperlink',
  'title',
  'leading_country',
@@ -139,7 +139,7 @@ session = SessionState.get(run_id=0)
 #title start page
 st.title('Machine Learning for Nature Climate Energy Portfolio')
 
-sdg = Image.open('logo.png')
+sdg = Image.open('./streamlit/logo.png')
 st.sidebar.image(sdg, width=200)
 st.sidebar.title('Navigation')
 
