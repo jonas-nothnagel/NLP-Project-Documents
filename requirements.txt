@@ -28,6 +28,7 @@ holoviews==1.14.1
 panel==0.10.3
 Pillow==8.1.0
 sentence_transformers
+whoosh
 scikit_learn==0.24.1
 umap==0.1.1
 wordcloud==1.8.1
