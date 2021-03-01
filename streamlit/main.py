@@ -29,7 +29,7 @@ from whoosh.qparser import MultifieldParser,OrGroup, query
 from whoosh import scoring
 from whoosh import highlight
 #load indexed document storage and specify whoosh:
-ix = open_dir("../whoosh/whoosh")
+ix = open_dir("./whoosh/whoosh")
 weighting_type = scoring.BM25F()
 fields = ['all_text_clean']
 og = OrGroup.factory(0.9) #bonus scaler
@@ -102,23 +102,23 @@ df_columns = df.drop(columns=['PIMS_ID', 'all_text_clean', 'all_text_clean_spacy
 to_match = df_columns.columns.tolist()
 
 #2. load parent dict
-with open("../data/processed/parent_dict.pkl", 'rb') as handle:
+with open("./data/processed/parent_dict.pkl", 'rb') as handle:
     parents = pickle.load(handle)
 
 #3. load sub category dict
-with open("../data/processed/category_dict.pkl", 'rb') as handle:
+with open("./data/processed/category_dict.pkl", 'rb') as handle:
     sub = pickle.load(handle)    
     
 #4. Load Training Scores:
-with open("../data/processed/tfidf_only_f1.pkl", 'rb') as handle:
+with open("./data/processed/tfidf_only_f1.pkl", 'rb') as handle:
     scores_dict = pickle.load(handle)     
 
 #5. Load all categories as list:
-with open("../data/processed/all_categories_list.pkl", 'rb') as handle:
+with open("./data/processed/all_categories_list.pkl", 'rb') as handle:
     all_categories = pickle.load(handle)
 
 #6. Load df with targets:
-df_targets = pd.read_csv('../data/processed/taxonomy_final_targets.csv')
+df_targets = pd.read_csv('./data/processed/taxonomy_final_targets.csv')
 df_columns = df_targets.drop(columns=['PIMS_ID', 'all_text', 'all_text_clean', 'all_text_clean_spacy',  'hyperlink',
  'title',
  'leading_country',
