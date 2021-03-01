@@ -1,11 +1,6 @@
 #basics
 import pandas as pd
 import numpy as np
-from inspect import getsourcefile
-import os
-import os.path as path, sys
-current_dir = path.dirname(path.abspath(getsourcefile(lambda:0)))
-sys.path.insert(0, current_dir[:current_dir.rfind(path.sep)])
 import joblib
 import pickle5 as pickle
 #import pickle
@@ -19,6 +14,7 @@ import torch
 from transformers import pipeline
 from transformers import AutoTokenizer, AutoModelForQuestionAnswering
 from transformers import AutoModelForSequenceClassification, AutoTokenizer
+from sentence_transformers import SentenceTransformer, util
 
 #fuzzy search
 from fuzzywuzzy import fuzz
@@ -51,6 +47,10 @@ def selectbox_with_default(text, values, default=DEFAULT, sidebar=False):
     return func(text, np.insert(np.array(values, object), 0, default))
 
 #helper functions
+from inspect import getsourcefile
+import os.path as path, sys
+current_dir = path.dirname(path.abspath(getsourcefile(lambda:0)))
+sys.path.insert(0, current_dir[:current_dir.rfind(path.sep)])
 import src.clean_dataset as clean
 #import src.vectorize_embed as em
 
@@ -71,6 +71,20 @@ def neuralqa():
                                                           return_dict=False)
 
     return tokenizer, model
+
+@st.cache(allow_output_mutation=True)
+def sentence_transformer(sentences):
+    
+    for i in range(len(sentences)):
+        sentences[i] = sentences[i].replace('_', ' ')
+    for i in range(len(sentences)):
+        sentences[i] = sentences[i].lstrip()
+    
+    embedder = SentenceTransformer('paraphrase-distilroberta-base-v1')
+    
+    corpus_embeddings = embedder.encode(sentences, convert_to_tensor=True)
+    
+    return embedder, corpus_embeddings
 
 sys.path.pop(0)
 
@@ -105,7 +119,7 @@ with open("../data/processed/all_categories_list.pkl", 'rb') as handle:
 
 #6. Load df with targets:
 df_targets = pd.read_csv('../data/processed/taxonomy_final_targets.csv')
-df_columns = df_targets.drop(columns=['PIMS_ID', 'all_text_clean', 'all_text_clean_spacy',  'hyperlink',
+df_columns = df_targets.drop(columns=['PIMS_ID', 'all_text', 'all_text_clean', 'all_text_clean_spacy',  'hyperlink',
  'title',
  'leading_country',
  'grant_amount',
@@ -417,16 +431,32 @@ if app_selection == 'Fuzzy Structured Search':
     
     with container_3.beta_container():
         
-        input_query = st.text_input('Please Input your Query: (works best for keywords - coral reef, agroforestry, etc)')
-        
-        if input_query != '':
-            matches = process.extract(input_query, to_match_targets, limit = 15)
-            match_string = []
-            for match in matches:
-                for m in match:
-                    if type(m) == str:
-                        match_string.append(m)
+        model_selection = st.selectbox('Choose Semantic Search model:', ('Fuzzy Elastic Search', 'Neural Sentence Transformers'))
+                
             
+        if model_selection == "Fuzzy Elastic Search":
+            input_query = st.text_input('Please Input your Query: (works best for keywords - coral reef, agroforestry, etc)')
+            if input_query != '':
+                matches = process.extract(input_query, to_match_targets, limit = 15)
+                match_string = []
+                for match in matches:
+                    for m in match:
+                        if type(m) == str:
+                            match_string.append(m)
+                        
+        if model_selection == "Neural Sentence Transformers":            
+            embedder, corpus_embeddings = sentence_transformer(to_match_targets)
+            
+            input_query = st.text_input('Please Input your Query: (works best for keywords - coral reef, agroforestry, etc)')
+            if input_query != '':            
+                query_embedding = embedder.encode(input_query, convert_to_tensor=True)
+                hits = util.semantic_search(query_embedding, corpus_embeddings, top_k=15)
+                hits = hits[0]
+                match_string = []
+                for hit in hits:
+                    match_string.append(to_match_targets[hit['corpus_id']])
+                
+        if input_query != '': 
             options = st.multiselect('These are the most likely categories. Select:', 
                 match_string, format_func=lambda x: 'Select a category' if x == '' else x)
            
@@ -449,18 +479,7 @@ if app_selection == 'Fuzzy Structured Search':
                     result_df = df_targets.query(' or '.join(f(t) for t in filters))
                     st.write('Relevant Project IDs:', result_df[['PIMS_ID', 'title', 'leading_country', 'grant_amount']], "Number of projects:", len(result_df))
                     result_df = result_df.loc[result_df['lat'] != 51.0834196]
-                    #st.map(result_df)
-            
-#            option = st.selectbox("These are the most likely categories. Select:" ,match_string)
-#            st.write('you selected', option)
-            
-#            if option in df.columns.tolist():                
-#                result = df.loc[df[option] == 1]
-#                result = result.reset_index(drop=True)
-#                result = result[['PIMS_ID', 'title','leading_country', 'grant_amount', 'hyperlink', 'lon', 'lat']]   
-#                summary = dict(zip(result.PIMS_ID.tolist(),result.hyperlink.tolist()))
-#                
-#                st.write('Relevant Project IDs:', result[['PIMS_ID', 'title', 'leading_country', 'grant_amount']], "Number of projects:", len(result))
+        
                 pims_structured = result_df.PIMS_ID.tolist()
                 
                 if len(pims_structured) > 0:
@@ -477,7 +496,7 @@ if app_selection == 'Fuzzy Structured Search':
                             pims.append(res['PIMS_ID'])
                             pims = [ int(x) for x in pims ]
                             length = len(pims)
-    
+        
                     intersections = list(set(pims_structured) & set(pims))
                     intersection_ratio = len(intersections)/len(pims_structured)
                     recall = len(intersections)/len(pims)
