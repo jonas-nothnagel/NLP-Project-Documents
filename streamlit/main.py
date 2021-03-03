@@ -1,7 +1,7 @@
 #basics
 import pandas as pd
 import numpy as np
-#import joblib
+import joblib
 import pickle5 as pickle
 #import pickle
 import time
@@ -29,7 +29,7 @@ from whoosh.qparser import MultifieldParser,OrGroup, query
 from whoosh import scoring
 from whoosh import highlight
 #load indexed document storage and specify whoosh:
-ix = open_dir("./whoosh/whoosh")
+ix = open_dir("../whoosh/whoosh")
 weighting_type = scoring.BM25F()
 fields = ['all_text_clean']
 og = OrGroup.factory(0.9) #bonus scaler
@@ -39,7 +39,7 @@ parser = MultifieldParser(fields, ix.schema, group = og)
 import streamlit as st
 import SessionState
 from load_css import local_css
-local_css("./streamlit/style.css")
+local_css("style.css")
 
 DEFAULT = '< PICK A VALUE >'
 def selectbox_with_default(text, values, default=DEFAULT, sidebar=False):
@@ -80,17 +80,17 @@ def sentence_transformer(sentences):
     for i in range(len(sentences)):
         sentences[i] = sentences[i].lstrip()
     
-    embedder = SentenceTransformer('paraphrase-distilroberta-base-v1')
+    embedder = SentenceTransformer('stsb-roberta-large')
     
-    corpus_embeddings = embedder.encode(sentences, convert_to_tensor=True)
+    #corpus_embeddings = embedder.encode(sentences, convert_to_tensor=True)
     
-    return embedder, corpus_embeddings
+    return embedder
 
 sys.path.pop(0)
 
 #%%
 #1. load in complete transformed and processed dataset for pre-selection and exploration purpose
-df = pd.read_csv('./data/processed/taxonomy_final.csv')
+df = pd.read_csv('../data/processed/taxonomy_final.csv')
 df_columns = df.drop(columns=['PIMS_ID', 'all_text_clean', 'all_text_clean_spacy',  'hyperlink',
  'title',
  'leading_country',
@@ -102,23 +102,23 @@ df_columns = df.drop(columns=['PIMS_ID', 'all_text_clean', 'all_text_clean_spacy
 to_match = df_columns.columns.tolist()
 
 #2. load parent dict
-with open("./data/processed/parent_dict.pkl", 'rb') as handle:
+with open("../data/processed/parent_dict.pkl", 'rb') as handle:
     parents = pickle.load(handle)
 
 #3. load sub category dict
-with open("./data/processed/category_dict.pkl", 'rb') as handle:
+with open("../data/processed/category_dict.pkl", 'rb') as handle:
     sub = pickle.load(handle)    
     
 #4. Load Training Scores:
-with open("./data/processed/tfidf_only_f1.pkl", 'rb') as handle:
+with open("../data/processed/tfidf_only_f1.pkl", 'rb') as handle:
     scores_dict = pickle.load(handle)     
 
 #5. Load all categories as list:
-with open("./data/processed/all_categories_list.pkl", 'rb') as handle:
+with open("../data/processed/all_categories_list.pkl", 'rb') as handle:
     all_categories = pickle.load(handle)
 
 #6. Load df with targets:
-df_targets = pd.read_csv('./data/processed/taxonomy_final_targets.csv')
+df_targets = pd.read_csv('../data/processed/taxonomy_final_targets.csv')
 df_columns = df_targets.drop(columns=['PIMS_ID', 'all_text', 'all_text_clean', 'all_text_clean_spacy',  'hyperlink',
  'title',
  'leading_country',
@@ -126,11 +126,14 @@ df_columns = df_targets.drop(columns=['PIMS_ID', 'all_text', 'all_text_clean', '
  'country_code',
  'lon',
  'lat'])
-    
 to_match_targets = df_columns.columns.tolist()
+
+#7. Load corpus embeddings for neural matching:
+corpus_embeddings_roberta = pickle.load(open("../data/processed/corpus_embeddings_roberta.pkl", 'rb'))
     
 #sort list
 all_categories = sorted(all_categories)    
+
 #%%
 session = SessionState.get(run_id=0)
 
@@ -139,7 +142,7 @@ session = SessionState.get(run_id=0)
 #title start page
 st.title('Machine Learning for Nature Climate Energy Portfolio')
 
-sdg = Image.open('./streamlit/logo.png')
+sdg = Image.open('logo.png')
 st.sidebar.image(sdg, width=200)
 st.sidebar.title('Navigation')
 
@@ -147,7 +150,7 @@ st.sidebar.title('Navigation')
 #%%
 # app decision:
 app_selection = st.sidebar.selectbox('What application would you like to test?', 
-                             ('', 'Elastic Search', 'Fuzzy Structured Search', 'ML Classification', 'Zero-Shot Classification',
+                             ('', 'Neural Structured Search', 'Elastic Search',  'ML Classification', 'Zero-Shot Classification',
                               'Neural Question Answering'),
                              format_func=lambda x: 'Default Data Exploration' if x == '' else x)
 
@@ -172,7 +175,7 @@ if app_selection == '':
     with container_1.beta_container():
         st.write('## Explore the portfolio with new taxonomy:')
         options = st.multiselect('Select categories from the taxonomy:', 
-                                              all_categories, format_func=lambda x: 'Select a category' if x == '' else x)
+                                              to_match_targets, format_func=lambda x: 'Select a category' if x == '' else x)
         
         
         filters = []
@@ -181,7 +184,7 @@ if app_selection == '':
                 condition =(k,1)
                 filters.append(condition)
             f = '{0[0]} == {0[1]}'.format
-            result_df = df.query(' & '.join(f(t) for t in filters))
+            result_df = df_targets.query(' & '.join(f(t) for t in filters))
             st.write('Relevant Project IDs:', result_df[['PIMS_ID', 'title', 'leading_country', 'grant_amount']], "Number of projects:", len(result_df))
             result_df = result_df.loc[result_df['lat'] != 51.0834196]
             st.map(result_df)
@@ -294,7 +297,7 @@ if app_selection == 'ML Classification':
                           
                             if model_selection == 'TFIDF':
 
-                                tfidf_vectorizer = joblib.load('./models/tf_idf/tf_idf_only/'+category+'_'+'vectorizer.sav')        
+                                tfidf_vectorizer = joblib.load('../models/tf_idf/tf_idf_only/'+category+'_'+'vectorizer.sav')        
                                 fnames = tfidf_vectorizer.get_feature_names()
                                 
                                 vector_df = tfidf_vectorizer.transform(clean_df)
@@ -343,13 +346,13 @@ if app_selection == 'ML Classification':
                             if model_selection == 'TFIDF + LSA Dimension Reduction':
 
                                 
-                                tfidf_vectorizer = joblib.load('./models/tf_idf/tf_idf_lsa/'+category+'_'+'vectorizer.sav')        
-                                lsa = joblib.load('./models/tf_idf/tf_idf_lsa/'+category+'_'+'lsa.sav')
+                                tfidf_vectorizer = joblib.load('../models/tf_idf/tf_idf_lsa/'+category+'_'+'vectorizer.sav')        
+                                lsa = joblib.load('../models/tf_idf/tf_idf_lsa/'+category+'_'+'lsa.sav')
                                 
                                 vector_df = tfidf_vectorizer.transform(clean_df)
                                 vector_df = lsa.transform(vector_df)
                         
-                                clf = joblib.load('./models/tf_idf/tf_idf_lsa/'+category+'_'+'model.sav')
+                                clf = joblib.load('../models/tf_idf/tf_idf_lsa/'+category+'_'+'model.sav')
                                 y_hat = clf.predict(vector_df)
                                 y_prob = clf.predict_proba(vector_df)
                                 
@@ -421,7 +424,7 @@ if app_selection == 'ML Classification':
    
 # add elastic search after fuzzy structured search.
                                     
-if app_selection == 'Fuzzy Structured Search':
+if app_selection == 'Neural Structured Search':
     
     container_1 = st.empty()  
     container_2 = st.empty()  
@@ -430,11 +433,13 @@ if app_selection == 'Fuzzy Structured Search':
     container_6 = st.empty()
     
     with container_3.beta_container():
-        
-        model_selection = st.selectbox('Choose Semantic Search model:', ('Fuzzy Elastic Search', 'Neural Sentence Transformers'))
+        st.write('## Explore the portfolio using neural semantic search and the new taxonomy')
+        model_selection = st.sidebar.selectbox('Choose Semantic Search model:', ('ROBERTA - Contextual Embeddings', 
+                                                                                 'Fuzzy Elastic Search'))
                 
             
         if model_selection == "Fuzzy Elastic Search":
+            st.sidebar.write("This model uses a fuzzy matching between your query and the categories.")
             input_query = st.text_input('Please Input your Query: (works best for keywords - coral reef, agroforestry, etc)')
             if input_query != '':
                 matches = process.extract(input_query, to_match_targets, limit = 15)
@@ -444,20 +449,21 @@ if app_selection == 'Fuzzy Structured Search':
                         if type(m) == str:
                             match_string.append(m)
                         
-        if model_selection == "Neural Sentence Transformers":            
-            embedder, corpus_embeddings = sentence_transformer(to_match_targets)
+        if model_selection == "ROBERTA - Contextual Embeddings":      
+            st.sidebar.write("This state-of-the-art model computes a high-dimensional representation of your query and finds the best matching categories considering domain-specific context.")
+            embedder = sentence_transformer(to_match_targets)
             
-            input_query = st.text_input('Please Input your Query: (works best for keywords - coral reef, agroforestry, etc)')
+            input_query = st.text_input('Please Input your Query: (works best for keywords/phrases - coral reef, climate change mitigation, etc.)')
             if input_query != '':            
                 query_embedding = embedder.encode(input_query, convert_to_tensor=True)
-                hits = util.semantic_search(query_embedding, corpus_embeddings, top_k=15)
+                hits = util.semantic_search(query_embedding, corpus_embeddings_roberta, top_k=15)
                 hits = hits[0]
                 match_string = []
                 for hit in hits:
                     match_string.append(to_match_targets[hit['corpus_id']])
                 
         if input_query != '': 
-            options = st.multiselect('These are the most likely categories. Select:', 
+            options = st.multiselect('These are the most likely categories. Select one or more:', 
                 match_string, format_func=lambda x: 'Select a category' if x == '' else x)
            
             filters = []
@@ -634,7 +640,7 @@ if app_selection == "Neural Question Answering":
             question = question
             
             with st.spinner('Running ElasticSearch to find relevant documents...'):
-                ix = open_dir("./whoosh/split")
+                ix = open_dir("../whoosh/split")
                 weighting_type = scoring.BM25F()
                 fields = ['text']
                 og = OrGroup.factory(0.9) #bonus scaler
@@ -714,3 +720,6 @@ st.write('           ')
 if st.button("Run again!"):
   session.run_id += 1
 
+#%%
+from pathlib import Path
+p = Path('.')
