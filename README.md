@@ -4,21 +4,22 @@ Please use Python <= 3.7 to ensure working pickle protocol.
 
 Clone the repo to your local machine:
 ```
-https://github.com/jonas-nothnagel/NLP-Project-Documents.git
+git clone https://github.com/jonas-nothnagel/NLP-Project-Documents.git
 ```
-To only run the web application install the dependencies in a virtual environment:
+To run the whole repo, more dependencies are needed and creating multiple virtual environments for the individual steps is recommended. 
+
+For running only the web application install the attached dependencies in a virtual environment:
 ```
 python3.7 -m venv venv
 source venv/bin/activate
 pip install --upgrade pip setuptools
 pip install -r requirements.txt
 ```
-On the first run, the app will download several transformer models and will store them on your local system. 
+On the first run, the app will download several transformer models (3-4GB) and will store them on your local system. 
 To start the application, navigate to the streamlit folder and simply run:
 ```
 streamlit run app.py
 ```
-To run the whole repo, more dependencies are needed and creating multiple virtual environments for the individual steps is recommended. 
 
 # NCE Document Classification
 Working Repo for building a set of models to automate the classification of project log-frames to a comprehensive taxonomy.
