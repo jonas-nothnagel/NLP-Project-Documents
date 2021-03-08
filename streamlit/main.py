@@ -55,6 +55,8 @@ import src.clean_dataset as clean
 #import src.vectorize_embed as em
 
 #experimental Transformer based approaches: SLOW
+import os
+os.environ["TOKENIZERS_PARALLELISM"]= "true"
 def zero_shot_classification():
     
     nli_model = AutoModelForSequenceClassification.from_pretrained('joeddav/xlm-roberta-large-xnli')
