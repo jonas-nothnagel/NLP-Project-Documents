@@ -42,7 +42,7 @@ Try out contextual structured search (with AND/OR) and compare to Elastic Search
 [![Whoosh](https://github.com/jonas-nothnagel/NLP-Project-Documents/blob/main/img/whoosh.png)](#features)
 
 ## Neural Question Answering:
-Basic Neural QA pipeline that uses whoosh for document similarity and a pre-trained transformer model for extractive QA. Highlighted in html. 
+Neural QA pipeline that uses sentence transformers to build corpus embeddings and ranking paragraphs for retrieval and a pre-trained transformer model for extractive QA. Highlighted in html. 
 
 [![QA](https://github.com/jonas-nothnagel/NLP-Project-Documents/blob/main/img/neural_qa.png)](#features)
 
