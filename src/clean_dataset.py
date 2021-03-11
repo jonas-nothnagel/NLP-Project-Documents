@@ -450,4 +450,4 @@ def split_at_length(dataframe, column, length):
 
     splitted = splitted.rename(columns={"index": "text", 0: "PIMS_ID"})
     
-    return splitted
+    return dataframe, splitted
