@@ -52,11 +52,8 @@ import os.path as path, sys
 current_dir = path.dirname(path.abspath(getsourcefile(lambda:0)))
 sys.path.insert(0, current_dir[:current_dir.rfind(path.sep)])
 import src.clean_dataset as clean
-#import src.vectorize_embed as em
 
 #experimental Transformer based approaches: SLOW
-import os
-os.environ["TOKENIZERS_PARALLELISM"]= "true"
 def zero_shot_classification():
     
     nli_model = AutoModelForSequenceClassification.from_pretrained('joeddav/xlm-roberta-large-xnli')
@@ -64,7 +61,7 @@ def zero_shot_classification():
     
     return nli_model, tokenizer
 
-@st.cache
+@st.cache(allow_output_mutation=True)
 def neuralqa():
     
     tokenizer = AutoTokenizer.from_pretrained("bert-large-uncased-whole-word-masking-finetuned-squad", 
@@ -72,7 +69,8 @@ def neuralqa():
     model = AutoModelForQuestionAnswering.from_pretrained("bert-large-uncased-whole-word-masking-finetuned-squad", 
                                                           return_dict=False)
 
-    return tokenizer, model
+    bi_encoder = SentenceTransformer('nq-distilbert-base-v1')
+    return tokenizer, model, bi_encoder
 
 @st.cache(allow_output_mutation=True)
 def sentence_transformer(sentences):
@@ -133,6 +131,8 @@ to_match_targets = df_columns.columns.tolist()
 #7. Load corpus embeddings for neural matching:
 corpus_embeddings_roberta = pickle.load(open("../data/processed/corpus_embeddings_roberta.pkl", 'rb'))
     
+#8 load corpus embeddings for neural QA:
+corpus_embeddings = pickle.load(open("../data/processed/splitted_corpus_embeddings.pkl", 'rb'))
 #sort list
 all_categories = sorted(all_categories)    
 
@@ -619,98 +619,158 @@ if app_selection == "Neural Question Answering":
     container_5 = st.empty()       
     
     with container_6.beta_container():
-        st.write("Try Neural Question Answering. PROTOTYPE.")
+        st.header("Try Neural Question Answering.")
+        returns = st.sidebar.slider('Maximal number of answer suggestions:', 1, 10, 5)
+#        examples=["", 
+#                  "what's the problem with the artibonite river basin?", 
+#                  "what are threads for the machinga and mangochi districts of malawi?",
+#                  "how can we deal with rogue swells?"]
         
-        examples=["", 
-                  "what's the problem with the artibonite river basin?", 
-                  "what are threads for the machinga and mangochi districts of malawi?",
-                  "how can we deal with rogue swells?"]
-        
-        example = st.selectbox('Examples:', [k for k in examples], format_func=lambda x: 'Select an Example' if x == '' else x)
+        #example = st.selectbox('Examples:', [k for k in examples], format_func=lambda x: 'Select an Example' if x == '' else x)
               
-        question = st.text_input('Try own question (be as specific as possible):')
+        question = st.text_input('Type in your question (be as specific as possible):')
         
         #load and split dataframe:
-        splitted = clean.split_at_length(df, 'all_text_clean', 500)
+        wrapped, splitted = clean.split_at_length(df, 'all_text_clean', 512)
+        passages = splitted.text.tolist()
+        passage_id = splitted.PIMS_ID.tolist()
         
-        if example != "":
-            
-            question = example
-            
+        #if st.button('Evaluate'):
         if question != "":
             
-            question = question
-            
-            with st.spinner('Running ElasticSearch to find relevant documents...'):
-                ix = open_dir("../whoosh/split")
-                weighting_type = scoring.BM25F()
-                fields = ['text']
-                og = OrGroup.factory(0.9) #bonus scaler
-                parser = MultifieldParser(fields, ix.schema, group = og)
+#            question = question
+#            
+#            with st.spinner('Running ElasticSearch to find relevant documents...'):
+#                ix = open_dir("../whoosh/split")
+#                weighting_type = scoring.BM25F()
+#                fields = ['text']
+#                og = OrGroup.factory(0.9) #bonus scaler
+#                parser = MultifieldParser(fields, ix.schema, group = og)
+#                
+#                q = parser.parse(question)
+#                
+#                pims = []
+#                all_text = []
+#                #title = []
+#                #grant_amount = []
+#                #leading_country = []
+#                
+#                with ix.searcher(weighting = weighting_type) as s:
+#                  results = s.search(q, limit = 1)
+#                  results.fragmenter = highlight.SentenceFragmenter()
+#                  results.formatter = highlight.UppercaseFormatter()
+#                  
+#                  for res in results:
+#                     pims.append(res['PIMS_ID'])
+#                     all_text.append(res['text'])
+#                     pims = [ int(x) for x in pims ]
+#                     #title.append(res['title'])
+#                     #grant_amount.append(res['grant_amount'])             
+#                     #leading_country.append(res['leading_country'])
+#                     
+#                result = dict(zip(pims, all_text))
+#                result = pd.DataFrame(result.items(), columns=['PIMS_ID', 'text'])
+#                #result= result.assign(text=all_text)
+#                #result= result.assign(leading_country=leading_country)
+#                #result= result.assign(grant_amount=grant_amount)
+#                
+#                result['PIMS_ID'] = result['PIMS_ID'].astype(int)
+#                
+#                #texts = []
+#                #for i in result.text:
+#                    #texts.append(str(i))
+#                
+#                text = str(result.text.iloc[0])
+#                
+#                st.write(result)
+
+            with st.spinner('Processing all logframes and finding best answers...'):
+                tokenizer, model, bi_encoder = neuralqa()
+                top_k = returns  # Number of passages we want to retrieve with the bi-encoder
+                question_embedding = bi_encoder.encode(question, convert_to_tensor=True)
                 
-                q = parser.parse(question)
+                hits = util.semantic_search(question_embedding, corpus_embeddings, top_k=top_k)
+                hits = hits[0]  
                 
-                pims = []
-                all_text = []
-                #title = []
-                #grant_amount = []
-                #leading_country = []
+                #define lists
+                matches = []
+                ids = []
+                scores = []
+                answers = []
+    
+                for hit in hits:
+                    matches.append(passages[hit['corpus_id']])
+                    ids.append(passage_id[hit['corpus_id']])
+                    scores.append(hit['score'])
+                    
+                for match in matches:
+                    inputs = tokenizer.encode_plus(question, match, add_special_tokens=True, return_tensors="pt")
+                    input_ids = inputs["input_ids"].tolist()[0]
+
+                    text_tokens = tokenizer.convert_ids_to_tokens(input_ids)
+                    answer_start_scores, answer_end_scores = model(**inputs)
+
+                    answer_start = torch.argmax(answer_start_scores)  # Get the most likely beginning of answer with the argmax of the score
+                    answer_end = torch.argmax(answer_end_scores) + 1  # Get the most likely end of answer with the argmax of the score
+
+                    answer = tokenizer.convert_tokens_to_string(tokenizer.convert_ids_to_tokens(input_ids[answer_start:answer_end]))
+                    
+                    answers.append(answer)
                 
-                with ix.searcher(weighting = weighting_type) as s:
-                  results = s.search(q, limit = 1)
-                  results.fragmenter = highlight.SentenceFragmenter()
-                  results.formatter = highlight.UppercaseFormatter()
-                  
-                  for res in results:
-                     pims.append(res['PIMS_ID'])
-                     all_text.append(res['text'])
-                     pims = [ int(x) for x in pims ]
-                     #title.append(res['title'])
-                     #grant_amount.append(res['grant_amount'])             
-                     #leading_country.append(res['leading_country'])
-                     
-                result = dict(zip(pims, all_text))
-                result = pd.DataFrame(result.items(), columns=['PIMS_ID', 'text'])
-                #result= result.assign(text=all_text)
-                #result= result.assign(leading_country=leading_country)
-                #result= result.assign(grant_amount=grant_amount)
+                    
+                # generate result df
+                df_results = pd.DataFrame(
+                    {'PIMS_ID': ids,
+                     'answer': answers,
+                     'context': matches,
+                     "scores": scores
+                    })
+    
                 
-                result['PIMS_ID'] = result['PIMS_ID'].astype(int)
                 
-                #texts = []
-                #for i in result.text:
-                    #texts.append(str(i))
+                st.header("Retrieved Answers:")
+                for index, row in df_results.iterrows():
+                    green = "<span class='highlight turquoise'>"+row['answer']+"<span class='bold'>Answer</span></span>"
+                    row['context'] = row['context'].replace(row['answer'], green)
+                    row['context'] = "<div>"+row['context']+"</div>"
+                    st.markdown(row['context'], unsafe_allow_html=True)
+                    st.write("")
+                    st.write("Relevance:", round(row['scores'],2), "PIMS_ID:", row['PIMS_ID'])
+                    st.write("____________________________________________________________________")
+                    
+                df_results.set_index('PIMS_ID', inplace=True)
+                st.header("Summary:")
+                st.table(df_results)
                 
-                text = str(result.text.iloc[0])
                 
-                st.write(result)
-            
-                if text != "":
-                    with st.spinner('Load Weights of Transformer model...'):
-                        tokenizer, model = neuralqa()
-                            
-                        inputs = tokenizer.encode_plus(question, text, add_special_tokens=True, return_tensors="pt")
-                        input_ids = inputs["input_ids"].tolist()[0]
-        
-                        text_tokens = tokenizer.convert_ids_to_tokens(input_ids)
-                        answer_start_scores, answer_end_scores = model(**inputs)
-        
-                        answer_start = torch.argmax(answer_start_scores)  # Get the most likely beginning of answer with the argmax of the score
-                        answer_end = torch.argmax(answer_end_scores) + 1  # Get the most likely end of answer with the argmax of the score
-        
-                        answer = tokenizer.convert_tokens_to_string(tokenizer.convert_ids_to_tokens(input_ids[answer_start:answer_end]))
-        
-                        st.write(f"Question: {question}")
-                        
-                        st.write(f"Answer: {answer}\n")
-                        
-                        st.markdown("**Context:**")
-                        
-                        green = "<span class='highlight green'>"+answer+"</span>"
-                        
-                        text = text.replace(answer, green)
-                        text = "<div>"+text+"</div>"
-                        st.markdown(text, unsafe_allow_html=True)
+                    
+
+#            if text != "":
+#                with st.spinner('Load Weights of Transformer model...'):
+#                    tokenizer, model, bi_encoder = neuralqa()
+#                        
+#                    inputs = tokenizer.encode_plus(question, text, add_special_tokens=True, return_tensors="pt")
+#                    input_ids = inputs["input_ids"].tolist()[0]
+#    
+#                    text_tokens = tokenizer.convert_ids_to_tokens(input_ids)
+#                    answer_start_scores, answer_end_scores = model(**inputs)
+#    
+#                    answer_start = torch.argmax(answer_start_scores)  # Get the most likely beginning of answer with the argmax of the score
+#                    answer_end = torch.argmax(answer_end_scores) + 1  # Get the most likely end of answer with the argmax of the score
+#    
+#                    answer = tokenizer.convert_tokens_to_string(tokenizer.convert_ids_to_tokens(input_ids[answer_start:answer_end]))
+#    
+#                    st.write(f"Question: {question}")
+#                    
+#                    st.write(f"Answer: {answer}\n")
+#                    
+#                    st.markdown("**Context:**")
+#                    
+#                    green = "<span class='highlight green'>"+answer+"</span>"
+#                    
+#                    text = text.replace(answer, green)
+#                    text = "<div>"+text+"</div>"
+#                    st.markdown(text, unsafe_allow_html=True)
                         
 #%%
 st.write('           ')
