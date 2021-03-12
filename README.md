@@ -20,6 +20,10 @@ To start the application, navigate to the streamlit folder and simply run:
 ```
 streamlit run app.py
 ```
+## Neural Question Answering:
+Ask open Question to the project documents using a Neural QA pipeline powered by sentence transformers to build corpus embeddings and ranking of paragraphs. For  retrieval a pre-trained transformer model for extractive QA is applied. Highlighted in html. 
+![Farmers Market Finder Demo](https://github.com/jonas-nothnagel/NLP-Project-Documents/blob/main/img/neural_qa.gif)
+
 
 # NCE Document Classification
 Working Repo for building a set of models to automate the classification of project log-frames to a comprehensive taxonomy.
@@ -40,12 +44,6 @@ And for older experiments:
 Try out contextual structured search (with AND/OR) and compare to Elastic Search results. Here you can choose between fuzzy string matching and neural sentence transformers for contextual embeddings.
 
 [![Whoosh](https://github.com/jonas-nothnagel/NLP-Project-Documents/blob/main/img/whoosh.png)](#features)
-
-## Neural Question Answering:
-Neural QA pipeline that uses sentence transformers to build corpus embeddings and ranking paragraphs for retrieval and a pre-trained transformer model for extractive QA. Highlighted in html. 
-![Farmers Market Finder Demo](https://github.com/jonas-nothnagel/NLP-Project-Documents/blob/main/img/neural_qa.gif)
-
-[![QA](https://github.com/jonas-nothnagel/NLP-Project-Documents/blob/main/img/neural_qa.png)](#features)
 
 ## Zero Shot Classification
 Try an implementation of hugginface's Zero-Shot classification model:
