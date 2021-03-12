@@ -43,6 +43,7 @@ Try out contextual structured search (with AND/OR) and compare to Elastic Search
 
 ## Neural Question Answering:
 Neural QA pipeline that uses sentence transformers to build corpus embeddings and ranking paragraphs for retrieval and a pre-trained transformer model for extractive QA. Highlighted in html. 
+![Farmers Market Finder Demo](https://github.com/jonas-nothnagel/NLP-Project-Documents/blob/main/img/neural_qa.gif)
 
 [![QA](https://github.com/jonas-nothnagel/NLP-Project-Documents/blob/main/img/neural_qa.png)](#features)
 
