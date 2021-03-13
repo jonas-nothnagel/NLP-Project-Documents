@@ -18,7 +18,7 @@ pip install -r requirements.txt
 On the first run, the app will download several transformer models (3-4GB) and will store them on your local system. 
 To start the application, navigate to the streamlit folder and simply run:
 ```
-streamlit run app.py
+streamlit run main.py
 ```
 ## Neural Question Answering:
 Ask open Question to the project documents using a Neural QA pipeline powered by sentence transformers to build corpus embeddings and ranking of paragraphs. For  retrieval a pre-trained transformer model for extractive QA is applied. Highlighted in html. 
