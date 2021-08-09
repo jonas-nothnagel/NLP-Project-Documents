@@ -25,6 +25,16 @@ Contents
  * [Notes](#notes)
 
 ## Why
+Having a large portfolio of projects it is crucial have a way to extract meaningful, reliable and agreggated information. We may very well know how many projects we run in a specific country or region but what if we need understand what our portfolio is on a specific topic such as "climate change mitiigation", "green chemistry" or zooming further in "beekeeping".
+
+Initially, we tried to leverage unsupervised learning algorithms such as topic modelling and clustering to find the thematic areas of our portfolio and query it accordingly. This, however, did not bring the desired level of reliability and accuracy. In order to overcome this problem we worked on establishing a comprehensive, in-depth taxonomy that allows us to cover the portfolio in granuality. By consulting each thematic team we manually labelled our portfolio with hundreds of categories to cover as much information as possible.
+
+The Machine Learning part comes at a later step now. We are using the labeled portfolio to train models to understand the linkages between our projects and the categories. Why is this helpful?
+1. Labeling is a very time and cost intesive work. Having trained models we can automatise the labeling for future projects and gradually improve the model performance over time.
+2. We may infer projects outside our portfolio to our taxonomy and see how it would be positioned.
+3. Within this project we can also improve the querying of our portfolio employing powerful pre-trained neural language models to find the exact information we need.
+4. Spill-over effects: By setting up this projects we have to build data pipelines, process portfolio data and connect it with the system and team. This will open many opportunities for other data-driven projects using this pioneer work to build on. 
+5. Through this project our team and UNDP as a whole may advance further to truly digital and innovative work approaches. s
 
 ---
 ## Installation
