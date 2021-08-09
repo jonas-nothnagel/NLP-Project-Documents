@@ -148,7 +148,7 @@ Deploys trained ML Text Classification models and allows for user feedback to it
 
 Input any text and choose from up to 153 categories for prediction. Obtain results and manually correct predictions. For the sandbox, the original text and feedback is stored in a [Firebase](https://firebase.google.com/?hl=de) DataBase and can be used for further model training and tuning.
 
-![Demo](.img/demo_1.gif)
+![Demo](./img/demo_1.gif)
 
 Detailed explanation of important features that algorithm uses for decision:
 
