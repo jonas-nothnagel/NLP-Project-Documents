@@ -35,7 +35,7 @@ The Machine Learning part comes at a later step now. We are using the labeled po
 2. We may infer projects outside our portfolio to our taxonomy and see how it would be positioned.
 3. Within this project we can also improve the querying of our portfolio employing powerful pre-trained neural language models to find the exact information we need.
 4. Spill-over effects: By setting up this projects we have to build data pipelines, process portfolio data and connect it with the system and team. This will open many opportunities for other data-driven projects using this pioneer work to build on. 
-5. Through this project our team and UNDP as a whole may advance further to truly digital and innovative work approaches. s
+5. Through this project our team and UNDP as a whole may advance further to truly digital and innovative work approaches. 
 
 ---
 ## Installation
@@ -63,26 +63,26 @@ To run the whole repo - for instance if you wish to re-train all the models and 
 
 ---
 ## Usage
-For easy and smooth re running of all the code and experiments, notebooks have been added and set up properly.
+For easy and smooth re-running of all the code and experiments, notebooks have been added and set up properly.
 
 ### 1. Get and process the data
 To start you can run the notebooks inside the **notebooks_data_processing** folder:
-1. make_dataset: Loads all data sources, pre-processes the data and merges the data to one file.
-2. data_cleaning: Applies a set of cleaning functions to process and prepare the data for analysis.
-3. make_data_encoding_labels: Takes care of the labels and encodes them to a machine readable, machine-learning ready format.
-4. make_final_dataset: Adds some specific steps of cleaning and processing that came up during model development and outputs final datasets. 
+1. **make_dataset**: Loads all data sources, pre-processes the data and merges the data to one file.
+2. **data_cleaning**: Applies a set of cleaning functions to process and prepare the data for analysis.
+3. **make_data_encoding_labels**: Takes care of the labels and encodes them to a machine readable, machine-learning ready format.
+4. **make_final_dataset**: Adds some specific steps of cleaning and processing that came up during model development and outputs final datasets. 
 
 ### 2. Train and save classification models
 This folder contains notebooks that run specific model trainings for each category. To train and store the models used in the application you may run one of the two notebooks:
-1. classification_tfidf_only
-2. classification_tfidf_lsa
+1. **classification_tfidf_only**
+2. **classification_tfidf_lsa**
 The folder contextual_embeddings contains training scripts for more sophisticated model that proved to be underperforming. 
 
 ### 3. Run and test models and other experiments: 
 You may either run the web application for testing and running all models or you may use the notebooks providing in the respective folders:
-1. sentence_transformers for neural search
-2. zero_shot_classifiaction for unsupervised categorisation. 
-3. nerual_question_answering for neural QA.
+1. **sentence_transformers** for neural search
+2. **zero_shot_classifiaction** for unsupervised categorisation. 
+3. **nerual_question_answering** for neural QA.
 
 **It is recommended to follow the installation guideline above and run the web application on your local system.**
 
@@ -210,5 +210,7 @@ Due to computational reasons, deep learning approaches are trained and evaluated
 
 And for older experiments:
 * https://console.paperspace.com/tesl8wodi/notebook/pr1zmah40
+
+If the new data is available as an API, it is recommended to rebuild the code without using notebooks and wrapping everything in classes and functions. 
 
 ---
