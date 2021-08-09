@@ -11,8 +11,8 @@ Finally, the repository also contains a web application written in Python using 
 Contents
 ========
 
- * [Why?](#What is the project about?)
- * [Installation](#Installation & Setup)
+ * [Why?](#Why?)
+ * [Installation](#Installation-Setup)
  * [Data](#Data)
  * [Taxonomy Classification](#Taxonomy-Classification-Excercise)
  * [Neural and Fuzzy Structured Search](#Neural-Search)
@@ -23,11 +23,9 @@ Contents
  * [Notes](#notes)
 
 ## Why
----
 
+---
 ## Installation
----
-
 Please use Python <= 3.7 to ensure working pickle protocol.
 
 Clone the repo to your local machine:
@@ -48,12 +46,15 @@ streamlit run main.py
 ```
 To run the whole repo, more dependencies are needed and creating multiple virtual environments for the individual steps is recommended. 
 
+---
+
 ## Data
 ---
 
 ## Taxonomy Classification
----
 Classify documents/text to over 300 categories of the newly introduced taxonomy and obtain detailed "black-box-algorithm" explanation of your prediction.
+
+---
 
 ### Text-Classification-Feedback-Loop
 Deploys trained ML Text Classification models and allows for user feedback to iterate and improve performance over time. 
@@ -64,14 +65,15 @@ Input any text and choose from up to 153 categories for prediction. Obtain resul
 ### Detailed explanation of important features that algorithm uses for decision
 ![Classification](./img/classification.JPG)
 
-## Neural and Fuzzy Structured Search
 ---
+## Neural and Fuzzy Structured Search
 Try out contextual structured search (with AND/OR) and compare to Elastic Search results. Here you can choose between fuzzy string matching and neural sentence transformers for contextual embeddings that understand the context of your queries.
 
 ![Whoosh](./img/whoosh.png)
 
-## Neural Question Answering
 ---
+
+## Neural Question Answering
 Question answering (QA) is a computer science discipline within the fields of information retrieval and natural language processing (NLP), which is concerned with building systems that automatically answer questions posed by humans in a natural language.
 A question answering implementation, usually a computer program, may construct its answers by querying a structured database of knowledge or information, usually a knowledge base. More commonly, question answering systems can pull answers from an unstructured collection of natural language documents.
 [Source](https://en.wikipedia.org/wiki/Question_answering).
@@ -88,22 +90,26 @@ Try this application to ask open questions to the UNDP project documents using a
 * Refined Ranking.
 * Refined Extractive QA
 
+---
+
 
 ## Zero Shot Classification
----
 Try an implementation of hugginface's Zero-Shot classification model:
 ![zero_shot](./img/zero_shot.png)
 
-## Web Application
 ---
+
+## Web Application
 To propery communicate the findings and result to the team, a web application has been programmed and hosted with the native python library streamlit. 
 
-## Next Steps
 ---
+
+## Next Steps
 Following steps are recommended:
 
-## Notes
 ---
+
+## Notes
 
 Experiments are continuously pushed in notebooks to the repo.
 Due to computational reasons, deep learning approaches are trained and evaluated on GPU powered notebooks. See specifically: 
@@ -111,3 +117,5 @@ Due to computational reasons, deep learning approaches are trained and evaluated
 
 And for older experiments:
 * https://console.paperspace.com/tesl8wodi/notebook/pr1zmah40
+
+---
