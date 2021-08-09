@@ -57,6 +57,7 @@ The data used for this project comes from two sources:
 
 In order to produce proper training data both dataset were merged on PIMS ID level. Multiple steps for data processing were applied to ensure highest possible quality.
 For detailed instructions and explanations please consult the respective python codes with comments. 
+
 ---
 
 ## Taxonomy Classification
@@ -102,13 +103,15 @@ This architecture was used also due to its interpretability. It is fairly easy t
 
 Note that the training data usually has far more than 512 characters. Transformers are not built to process such long texts. Thus sliding-windows has been employed to overcome those issues. 
 
-### Text-Classification-Feedback-Loop
+### Text-Classification
 Deploys trained ML Text Classification models and allows for user feedback to iterate and improve performance over time. 
 
-Input any text and choose from up to 153 categories for prediction. Obtain results and manually correct predictions. The original text and feedback is stored in a [Firebase](https://firebase.google.com/?hl=de) DataBase and can be used for further model training and tuning.
+Input any text and choose from up to 153 categories for prediction. Obtain results and manually correct predictions. For the sandbox, the original text and feedback is stored in a [Firebase](https://firebase.google.com/?hl=de) DataBase and can be used for further model training and tuning.
+
 ![Demo](https://github.com/jonas-nothnagel/Text-Classification-Feedback-Loop/blob/main/img/demo_1.gif)
 
-### Detailed explanation of important features that algorithm uses for decision
+Detailed explanation of important features that algorithm uses for decision:
+
 ![Classification](./img/classification.JPG)
 
 ---
