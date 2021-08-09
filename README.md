@@ -76,13 +76,15 @@ To start you can run the notebooks inside the **notebooks_data_processing** fold
 This folder contains notebooks that run specific model trainings for each category. To train and store the models used in the application you may run one of the two notebooks:
 1. **classification_tfidf_only**
 2. **classification_tfidf_lsa**
+
 The folder contextual_embeddings contains training scripts for more sophisticated model that proved to be underperforming. 
 
 ### 3. Run and test models and other experiments: 
 You may either run the web application for testing and running all models or you may use the notebooks providing in the respective folders:
-1. **sentence_transformers** for neural search
-2. **zero_shot_classifiaction** for unsupervised categorisation. 
-3. **nerual_question_answering** for neural QA.
+1. **results** for testing the classification models in a notebook.
+2. **sentence_transformers** for neural search.
+3. **zero_shot_classifiaction** for unsupervised categorisation. 
+4. **nerual_question_answering** for neural QA.
 
 **It is recommended to follow the installation guideline above and run the web application on your local system.**
 

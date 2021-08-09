@@ -1,2 +1,2 @@
-# Information Extraction 
-Functions to parse, querry and aggregate the data in Neo4j Graph Database.
+# Images
+Here we store images and gifs that are displayed in the repository. 

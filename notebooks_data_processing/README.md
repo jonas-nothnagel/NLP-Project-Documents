@@ -1,2 +1,2 @@
-# Information Extraction 
-Functions to parse, querry and aggregate the data in Neo4j Graph Database.
+# Making the data set
+This folder contains all notebooks used to pull the data and create processed datasets for Machine Learning. 

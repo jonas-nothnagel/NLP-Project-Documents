@@ -1,5 +1,5 @@
-# Small Data Long Documents
-Tools and helper functions:
+# Source Folder
+This folder contains the bread and butter of the whole project: The **tools and helper functions**. Note that most notebooks merely load those functions and run them inside. 
 
 ## Processing of Data:
 A set of functions to read in the data, clean, normalise and process it.
@@ -24,4 +24,4 @@ A set of function to vectorise and embed text.
 Scripts that define model architectures and parameters
 
 * Probabilistic Modelling : Sklearn - Logist Regression, XGBoost, SVM, etc
-* Deep Learning: Neural Networks, simple transfomers, etc
+* Deep Learning: Neural Networks, simple transfomers, etc (Note that these scripts have been removed from here and stored on the cloud environments for GPU support). 

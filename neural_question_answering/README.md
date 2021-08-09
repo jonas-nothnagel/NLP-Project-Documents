@@ -1,2 +1,2 @@
-# Information Extraction 
-Functions to parse, querry and aggregate the data in Neo4j Graph Database.
+# Neural QA
+In this folder you find the notebook that is training the corpus embeddings for the neural structured search and ranking of the QA model. 
