@@ -150,6 +150,7 @@ Try an implementation of hugginface's Zero-Shot classification model. This allow
 
 ## Web Application
 To propery communicate the findings and result to the team, a web application has been programmed and hosted with the native python library streamlit. Please see the installation instructions to run it on your local system. Due to privacy concerns the app is not publicly hosted currently and has to be run on your local system. 
+
 ---
 
 ## Next Steps
