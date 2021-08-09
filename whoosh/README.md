@@ -1,2 +1,2 @@
-# Information Extraction 
-Functions to parse, querry and aggregate the data in Neo4j Graph Database.
+# Whoosh 
+Whoosh is the python native ElasticSearch and used to compare the performance of our models to ElasticSearch. In this folder we index and store the corpus for using whoosh as a querying tool. 
