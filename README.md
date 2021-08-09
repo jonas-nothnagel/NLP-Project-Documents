@@ -15,6 +15,7 @@ Contents
 
  * [Why?](#Why?)
  * [Installation](#Installation-Setup)
+ * [Usage](#Usage)
  * [Data](#Data)
  * [Taxonomy Classification](#Taxonomy-Classification-Excercise)
  * [Neural and Fuzzy Structured Search](#Neural-Search)
@@ -59,6 +60,31 @@ To start the application, navigate to the streamlit folder and simply run:
 streamlit run main.py
 ```
 To run the whole repo - for instance if you wish to re-train all the models and process the data by yourself - more dependencies are needed and creating multiple virtual environments for the individual steps is recommended. The easiest way is to have a look at the respective libraries that are used for each code snippet and install them on a virtual machine with Python <= 3.7. 
+
+---
+## Usage
+For easy and smooth re running of all the code and experiments, notebooks have been added and set up properly.
+
+### 1. Get and process the data
+To start you can run the notebooks inside the **notebooks_data_processing** folder:
+1. make_dataset: Loads all data sources, pre-processes the data and merges the data to one file.
+2. data_cleaning: Applies a set of cleaning functions to process and prepare the data for analysis.
+3. make_data_encoding_labels: Takes care of the labels and encodes them to a machine readable, machine-learning ready format.
+4. make_final_dataset: Adds some specific steps of cleaning and processing that came up during model development and outputs final datasets. 
+
+### 2. Train and save classification models
+This folder contains notebooks that run specific model trainings for each category. To train and store the models used in the application you may run one of the two notebooks:
+1. classification_tfidf_only
+2. classification_tfidf_lsa
+The folder contextual_embeddings contains training scripts for more sophisticated model that proved to be underperforming. 
+
+### 3. Run and test models and other experiments: 
+You may either run the web application for testing and running all models or you may use the notebooks providing in the respective folders:
+1. sentence_transformers for neural search
+2. zero_shot_classifiaction for unsupervised categorisation. 
+3. nerual_question_answering for neural QA.
+
+**It is recommended to follow the installation guideline above and run the web application on your local system.**
 
 ---
 
