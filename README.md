@@ -8,7 +8,7 @@ All these items are further explained and introduced in more detail below.
 
 Finally, the repository also contains a web application written in Python using the streamlit library. It allows to test all models and tools and make them acessible for each team member.
 
-**Each folder has its own documentation to specify what the code inside does. The code is commented. **
+**Each folder has its own documentation to specify what the code inside does. The code is commented.**
 
 Contents
 ========
