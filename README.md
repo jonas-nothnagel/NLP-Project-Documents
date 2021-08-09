@@ -148,7 +148,7 @@ Deploys trained ML Text Classification models and allows for user feedback to it
 
 Input any text and choose from up to 153 categories for prediction. Obtain results and manually correct predictions. For the sandbox, the original text and feedback is stored in a [Firebase](https://firebase.google.com/?hl=de) DataBase and can be used for further model training and tuning.
 
-![Demo](https://github.com/jonas-nothnagel/Text-Classification-Feedback-Loop/blob/main/img/demo_1.gif)
+![Demo](.img/demo_1.gif)
 
 Detailed explanation of important features that algorithm uses for decision:
 
@@ -170,7 +170,7 @@ A question answering implementation, usually a computer program, may construct i
 
 Try this application to ask open questions to the UNDP project documents using a Neural QA pipeline powered by sentence transformers to build corpus embeddings and ranking of paragraphs. For retrieval a pre-trained transformer model for extractive QA is applied. The results are highlighted in html.
 
-[![QA](https://github.com/jonas-nothnagel/ClosedDomainQA/blob/master/img/neural_qa.gif)](#features)
+![QA](./img/neural_qa.gif)
 
 ### Upcoming and Possible Ideas
 * Add new data sources. 
