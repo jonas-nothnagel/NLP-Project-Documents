@@ -8,6 +8,8 @@ All these items are further explained and introduced in more detail below.
 
 Finally, the repository also contains a web application written in Python using the streamlit library. It allows to test all models and tools and make them acessible for each team member.
 
+**Each folder has its own documentation to specify what the code inside does. The code is commented. **
+
 Contents
 ========
 
@@ -81,7 +83,7 @@ To tackle these issues several experiments were run:
 The final model architecture is relatively simple but has outperformed all other combination of feature engineering and predictive model architectures. Features are build using **tf-idf embeddings** and models are fitted with **logistic regressions**. Note that the labels are heavily unbalanced which has been carefully resembled in the set-up of the logistic classifier. 
 This architecture was used also due to its interpretability. It is fairly easy to understand why a prediction was made. Special attention has been put on the explainability and a customised visual output has been coded to showcase what words and sentences have the strongest impact on a decision. 
 
-### Specifically follwoing algorithms were tested:
+### Specifically following algorithms were tested:
 * AdaBoost
 * Logistic Regression 
 * Stochastic Gradient Descent
