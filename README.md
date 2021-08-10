@@ -22,10 +22,15 @@ Contents
  * [Neural Question Answering](#neural-qa)
  * [Zero Shot Classification](#zero-shot)
  * [Web Application](#streamlit)
- * [Next Steps](#next)
+ * [Next Steps and Recommendations](#next)
+    - [General Project Progress](#progress)
+    - [Modeling](#modeling)
+    - [API Connection](#api)
+
+
  * [Notes](#notes)
 
-## Why
+## Why?
 Having a large portfolio of projects it is crucial have a way to extract meaningful, reliable and agreggated information. We may very well know how many projects we run in a specific country or region but what if we need understand what our portfolio is on a specific topic such as "climate change mitiigation", "green chemistry" or zooming further in "beekeeping".
 
 Initially, we tried to leverage unsupervised learning algorithms such as topic modelling and clustering to find the thematic areas of our portfolio and query it accordingly. This, however, did not bring the desired level of reliability and accuracy. In order to overcome this problem we worked on establishing a comprehensive, in-depth taxonomy that allows us to cover the portfolio in granuality. By consulting each thematic team we manually labelled our portfolio with hundreds of categories to cover as much information as possible.
@@ -193,15 +198,62 @@ To propery communicate the findings and result to the team, a web application ha
 
 ---
 
-## Next Steps
+## Next Steps and Recommendations 
 Following steps are recommended:
 
+### General Project Progress
 1. Connenct the code to an API that allows to pull the final taxonomy.
 2. Build a data pipeline that pulls both taxonomy and portfolio data from the API and merges them accordingly. Automate and Time. 
 3. Re-train models.
 4. Deploy trained models on PIMS+ to allow for automate tagging suggestions. 
 5. Build feedback loop and re-train models over time until performance is satisfactory. 
 6. Continue improving model architecture.
+
+### Modeling 
+* Implement a feedback loop and re-train and ship models continously. Depending on how much new data is uploaded and tagged the frequency may changed with time.
+* Tabular Machine Learning: Leverage more than just the text and use all available columns of the portfolio data to build features. You may try AutoML algorithms to take care of this.
+* We may think of a hierarchical model architecture again as soon as the final data structure is confirmed and cleared. 
+* With GPU support you may run again more sophisticated and expensive models (for instance transformer based neural nets). Consider the >512 characters length of the training texts.
+
+### API Connection
+* To connect to the PIMS+ API you may simply write a reques in python and set up a data pipeline. Follow this example to get started:
+```
+import pandas as pd
+import requests
+
+class PimsDataTransform():
+    def __init__(self):
+
+        # URL to API to get portfolio data
+        self.pims_endpoint = "https://IICPSD:PDyq6jRptHnOrS79S9US@api.undpgefpims.org/logframe/v1/project-time-lines"
+
+        # example unit test to check if all columns are correct. Fill all columns and datatypes here.
+        self.pims_columns = ['signature_programme_id', ...]
+        self.pims_column_datatypes = {'signature_programme_id': "<class 'list'>", ..."}
+
+        # store the data as a csv
+        self.file_name = "portfolio_data.csv"
+        self.path = "" + self.file_name
+
+
+    # return dataframe with portfolio data
+    def get_data(self):  
+        resp = requests.get(self.pims_endpoint)
+        resp_json = resp.json()
+        for obj in resp_json:
+            for key in obj:
+                if key not in self.pims_columns:
+                    err = "Required key missing: {}".format(key)
+                    raise Exception(err)
+
+        return pd.DataFrame(resp_json)
+
+
+if __name__ == '__main__':
+    pims_class = PimsDataTransform()
+    pims_df = pims_class.get_data()
+    print("Data from API extracted!")
+```
 ---
 
 ## Notes
