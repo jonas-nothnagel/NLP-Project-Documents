@@ -14,18 +14,18 @@ Contents
 ========
 
  * [Why?](#Why?)
- * [Installation](#Installation-Setup)
+ * [Installation](#Installation)
  * [Usage](#Usage)
  * [Data](#Data)
- * [Taxonomy Classification](#Taxonomy-Classification-Excercise)
- * [Neural and Fuzzy Structured Search](#Neural-Search)
- * [Neural Question Answering](#neural-qa)
- * [Zero Shot Classification](#zero-shot)
- * [Web Application](#streamlit)
- * [Next Steps and Recommendations](#next)
-    - [General Project Progress](#progress)
+ * [Taxonomy Classification](#Taxonomy-Classification)
+ * [Neural and Fuzzy Structured Search](#Neural-and-Fuzzy-Structured-Search)
+ * [Neural Question Answering](#Neural-Question-Answering)
+ * [Zero Shot Classification](#Zero-Shot-Classification)
+ * [Web Application](#Web-Application])
+ * [Next Steps and Recommendations](#Next-Steps-and-Recommendations)
+    - [General Project Progress](#General-Project-Progress)
     - [Modeling](#modeling)
-    - [API Connection](#api)
+    - [API Connection](#api-connection)
 
  * [Notes](#notes)
 
