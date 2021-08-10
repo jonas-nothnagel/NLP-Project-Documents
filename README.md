@@ -1,12 +1,12 @@
 # Nature Climate and Energy Taxonomy Classification & Portfolio Analysis Experiments
-This Repository contains the data and code to set up the taxonomy classification excercise. It is well documented and structured in a way that it can be simply deployed by following the instructions below.
-Apart of the taxonomy classification excersise, this repository also features several experiments:
+This Repository contains the data and code to set up the taxonomy classification exercise. It is well documented and structured in a way that it can be simply deployed by following the instructions below.
+Apart of the taxonomy classification exercise, this repository also features several experiments:
 * Neural Question Answering
 * Neural and Fuzzy Structured Search - as an improvement over ElasticSearch
-* Zero-Shot Text Classification for unsupervised categorisation.
+* Zero-Shot Text Classification for unsupervised categorization.
 All these items are further explained and introduced in more detail below.
 
-Finally, the repository also contains a web application written in Python using the streamlit library. It allows to test all models and tools and make them acessible for each team member.
+Finally, the repository also contains a web application written in Python using the streamlit library. It allows to test all models and tools and make them accessible for each team member.
 
 **Each folder has its own documentation to specify what the code inside does. The code is commented.**
 
@@ -27,16 +27,15 @@ Contents
     - [Modeling](#modeling)
     - [API Connection](#api)
 
-
  * [Notes](#notes)
 
 ## Why?
-Having a large portfolio of projects it is crucial have a way to extract meaningful, reliable and agreggated information. We may very well know how many projects we run in a specific country or region but what if we need understand what our portfolio is on a specific topic such as "climate change mitiigation", "green chemistry" or zooming further in "beekeeping".
+Having a large portfolio of projects it is crucial have a way to extract meaningful, reliable and aggregated information. We may very well know how many projects we run in a specific country or region but what if we need understand what our portfolio is on a specific topic such as "climate change mitigation", "green chemistry" or zooming further in "beekeeping".
 
-Initially, we tried to leverage unsupervised learning algorithms such as topic modelling and clustering to find the thematic areas of our portfolio and query it accordingly. This, however, did not bring the desired level of reliability and accuracy. In order to overcome this problem we worked on establishing a comprehensive, in-depth taxonomy that allows us to cover the portfolio in granuality. By consulting each thematic team we manually labelled our portfolio with hundreds of categories to cover as much information as possible.
+Initially, we tried to leverage unsupervised learning algorithms such as topic modelling and clustering to find the thematic areas of our portfolio and query it accordingly. This, however, did not bring the desired level of reliability and accuracy. In order to overcome this problem we worked on establishing a comprehensive, in-depth taxonomy that allows us to cover the portfolio in granularity. By consulting each thematic team we manually labelled our portfolio with hundreds of categories to cover as much information as possible.
 
 The Machine Learning part comes at a later step now. We are using the labeled portfolio to train models to understand the linkages between our projects and the categories. Why is this helpful?
-1. Labeling is a very time and cost intesive work. Having trained models we can automatise the labeling for future projects and gradually improve the model performance over time.
+1. Labeling is a very time and cost intensive work. Having trained models we can automatize the labeling for future projects and gradually improve the model performance over time.
 2. We may infer projects outside our portfolio to our taxonomy and see how it would be positioned.
 3. Within this project we can also improve the querying of our portfolio employing powerful pre-trained neural language models to find the exact information we need.
 4. Spill-over effects: By setting up this projects we have to build data pipelines, process portfolio data and connect it with the system and team. This will open many opportunities for other data-driven projects using this pioneer work to build on. 
@@ -124,7 +123,7 @@ To tackle these issues several experiments were run:
 * Since we must classify hundreds of labels, the problem was turned into a multiple binary classification problem. Meaning that one classifier per category was trained. Alternatively, we may train a multi-label classification problem, however, the number of labels is too large and the size of training data too small for promising results. It was extensively tested, and results were disappointing. 
 
 The final model architecture is relatively simple but has outperformed all other combination of feature engineering and predictive model architectures. Features are build using **tf-idf embeddings** and models are fitted with **logistic regressions**. Note that the labels are heavily unbalanced which has been carefully resembled in the set-up of the logistic classifier. 
-This architecture was used also due to its interpretability. It is fairly easy to understand why a prediction was made. Special attention has been put on the explainability and a customised visual output has been coded to showcase what words and sentences have the strongest impact on a decision. 
+This architecture was used also due to its interpretability. It is fairly easy to understand why a prediction was made. Special attention has been put on the explainability and a customized visual output has been coded to showcase what words and sentences have the strongest impact on a decision. 
 
 ### Specifically following algorithms were tested:
 * AdaBoost
@@ -133,8 +132,7 @@ This architecture was used also due to its interpretability. It is fairly easy t
 * Random Forest
 * K Nearest Neighbor
 * Gaussian Naive Bayes
-* Decsision Tree
-
+* Decision Tree
 
 ### Following embeddings were used:
 * Roberta 
@@ -151,7 +149,7 @@ Note that the training data usually has far more than 512 characters. Transforme
 ### Text-Classification
 Deploys trained ML Text Classification models and allows for user feedback to iterate and improve performance over time. 
 
-Input any text and choose from up to 153 categories for prediction. Obtain results and manually correct predictions. For the sandbox, the original text and feedback is stored in a [Firebase](https://firebase.google.com/?hl=de) DataBase and can be used for further model training and tuning.
+Input any text and choose from up to 153 categories for prediction. Obtain results and manually correct predictions. For the sandbox, the original text and feedback is stored in a [Firebase](https://firebase.google.com/?hl=de) Database and can be used for further model training and tuning.
 
 ![Demo](./img/demo_1.gif)
 
@@ -172,7 +170,6 @@ Question answering (QA) is a computer science discipline within the fields of in
 A question answering implementation, usually a computer program, may construct its answers by querying a structured database of knowledge or information, usually a knowledge base. More commonly, question answering systems can pull answers from an unstructured collection of natural language documents.
 [Source](https://en.wikipedia.org/wiki/Question_answering).
 
-
 Try this application to ask open questions to the UNDP project documents using a Neural QA pipeline powered by sentence transformers to build corpus embeddings and ranking of paragraphs. For retrieval a pre-trained transformer model for extractive QA is applied. The results are highlighted in html.
 
 ![QA](./img/neural_qa.gif)
@@ -186,15 +183,14 @@ Try this application to ask open questions to the UNDP project documents using a
 
 ---
 
-
 ## Zero Shot Classification
-Try an implementation of hugginface's Zero-Shot classification model. This allows to use powerful language models to classify text to new categorie without training a model. 
+Try an implementation of hugginface's Zero-Shot classification model. This allows to use powerful language models to classify text to new categories without training a model. 
 ![zero_shot](./img/zero_shot.png)
 
 ---
 
 ## Web Application
-To propery communicate the findings and result to the team, a web application has been programmed and hosted with the native python library streamlit. Please see the installation instructions to run it on your local system. Due to privacy concerns the app is not publicly hosted currently and has to be run on your local system. 
+To properly communicate the findings and result to the team, a web application has been programmed and hosted with the native python library streamlit. Please see the installation instructions to run it on your local system. Due to privacy concerns the app is not publicly hosted currently and has to be run on your local system. 
 
 ---
 
@@ -202,7 +198,7 @@ To propery communicate the findings and result to the team, a web application ha
 Following steps are recommended:
 
 ### General Project Progress
-1. Connenct the code to an API that allows to pull the final taxonomy.
+1. Connect the code to an API that allows to pull the final taxonomy.
 2. Build a data pipeline that pulls both taxonomy and portfolio data from the API and merges them accordingly. Automate and Time. 
 3. Re-train models.
 4. Deploy trained models on PIMS+ to allow for automate tagging suggestions. 
@@ -210,34 +206,32 @@ Following steps are recommended:
 6. Continue improving model architecture.
 
 ### Modeling 
-* Implement a feedback loop and re-train and ship models continously. Depending on how much new data is uploaded and tagged the frequency may changed with time.
+* Implement a feedback loop and re-train and ship models continuously. Depending on how much new data is uploaded and tagged the frequency may changed with time.
 * Tabular Machine Learning: Leverage more than just the text and use all available columns of the portfolio data to build features. You may try AutoML algorithms to take care of this.
 * We may think of a hierarchical model architecture again as soon as the final data structure is confirmed and cleared. 
 * With GPU support you may run again more sophisticated and expensive models (for instance transformer based neural nets). Consider the >512 characters length of the training texts.
 
 ### API Connection
-* To connect to the PIMS+ API you may simply write a reques in python and set up a data pipeline. Follow this example to get started:
+* The taxonomy is currently not available from the API. Most likely there will be a separate API endpoint for the taxonomy. It is recommended to pull both the portfolio data as well as the taxonomy data and merge them on PIMS ID in the data  pipeline. Additional steps may be added here such as extracting logframes (see below). 
+* To connect to the PIMS+ API you may simply write a request in python and set up a data pipeline. Follow this example of a data pipeline that pulls the portfolio data from the PIMS+ API and also extracts and processes the logframes. The result is stored in a csv file. Taxonomy endpoint may be simply added here and merged with portfolio data. 
 ```
 import pandas as pd
 import requests
 
 class PimsDataTransform():
     def __init__(self):
-
-        # URL to API to get portfolio data
         self.pims_endpoint = "https://IICPSD:PDyq6jRptHnOrS79S9US@api.undpgefpims.org/logframe/v1/project-time-lines"
 
-        # example unit test to check if all columns are correct. Fill all columns and datatypes here.
-        self.pims_columns = ['signature_programme_id', ...]
-        self.pims_column_datatypes = {'signature_programme_id': "<class 'list'>", ..."}
-
-        # store the data as a csv
-        self.file_name = "portfolio_data.csv"
+        # for instance input all columns and datatypes to write some unit tests
+        self.pims_columns = ['signature_programme_id', ...}
+        self.file_name = "logs.csv"
         self.path = "" + self.file_name
+        self.duplicates = ['obj', 'ind', 'logframe']
 
+    def listToStringWithoutBrackets(self, list_to_convert):
+        return str(list_to_convert).replace('[','').replace(']','')
 
-    # return dataframe with portfolio data
-    def get_data(self):  
+    def get_logframes(self):  # sourcery no-metrics
         resp = requests.get(self.pims_endpoint)
         resp_json = resp.json()
         for obj in resp_json:
@@ -246,13 +240,66 @@ class PimsDataTransform():
                     err = "Required key missing: {}".format(key)
                     raise Exception(err)
 
-        return pd.DataFrame(resp_json)
+        pims_df = pd.DataFrame(resp_json)
 
+        #remove projects with empty logframes:
+        logs = pims_df[pims_df['developmentObjectiveOrOutcome'].map(lambda d: len(d)) > 2]
+        log_list = logs.developmentObjectiveOrOutcome.to_list()
+       
+        all_objectives_outcomes = []
+        all_indicators = []
+
+        #extract text from logframes:
+        for log_items in log_list:
+            indicators = []
+            objectives = []
+            
+            for l in log_items:
+                for key, value in l.items():
+
+                    #append all objectives and outcomes
+                    if key == "content":
+                        objectives.append(value)
+
+                    #append all indicators
+                    if key == "indicator":
+                        for k in value:
+                            for d_key, d_value in k.items():
+
+                                #avoid duplications
+                                if d_value not in indicators:
+
+                                    #do not append descriptive lists
+                                    if type(d_value) != list:
+
+                                        indicators.append(d_value)
+
+            all_indicators.append(indicators)
+            all_objectives_outcomes.append(objectives)
+
+        logs = logs.assign(obj = all_objectives_outcomes)
+        logs = logs.assign(ind = all_indicators)
+
+        #construct logframe text columns:
+        logs['logframe'] = logs["obj"] + logs["ind"]
+
+        #remove duplicate columns:
+        print(len(logs))
+        for dup in self.duplicates:
+            logs[dup] = logs[dup].apply(self.listToStringWithoutBrackets)
+            logs = logs.drop_duplicates(dup, keep=False)
+            print(len(logs))
+
+        print(len(logs))
+        logs.to_csv(self.path)
+        
+        return pims_df, logs
 
 if __name__ == '__main__':
     pims_class = PimsDataTransform()
-    pims_df = pims_class.get_data()
-    print("Data from API extracted!")
+    pims_df, logs = pims_class.get_logframes()
+    print(logs)
+    print("Data pulled from API and logframes extracted!")
 ```
 ---
 
@@ -268,3 +315,4 @@ And for older experiments:
 If the new data is available as an API, it is recommended to rebuild the code without using notebooks and wrapping everything in classes and functions. 
 
 ---
+
