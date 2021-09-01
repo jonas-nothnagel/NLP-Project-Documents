@@ -4,6 +4,7 @@ Apart of the taxonomy classification exercise, this repository also features sev
 * Neural Question Answering
 * Neural and Fuzzy Structured Search - as an improvement over ElasticSearch
 * Zero-Shot Text Classification for unsupervised categorization.
+
 All these items are further explained and introduced in more detail below.
 
 Finally, the repository also contains a web application written in Python using the streamlit library. It allows to test all models and tools and make them accessible for each team member.
