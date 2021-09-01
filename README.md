@@ -7,7 +7,7 @@ Apart of the taxonomy classification exercise, this repository also features sev
 
 All these items are further explained and introduced in more detail below.
 
-Finally, the repository also contains a web application written in Python using the streamlit library. It allows to test all models and tools and make them accessible for each team member.
+Finally, the repository also contains a web application written in Python using the **streamlit** library. It allows to test all models and tools and make them accessible for each team member.
 
 **Each folder has its own documentation to specify what the code inside does. The code is commented.**
 
