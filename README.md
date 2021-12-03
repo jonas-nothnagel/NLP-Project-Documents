@@ -31,7 +31,7 @@ Contents
  * [Notes](#notes)
 
 ## Why?
-Having a large portfolio of projects it is crucial having a way to extract meaningful, reliable and aggregated information. We may very well know how many projects we run in a specific country or region but what if we need understand what our portfolio is on a specific topic such as "climate change mitigation", "green chemistry" or zooming further in "beekeeping".
+Having a large portfolio of projects it is crucial finding a way to extract meaningful, reliable and aggregated information. We may very well know how many projects we run in a specific country or region but what if we need understand what our portfolio is on a specific topic such as "climate change mitigation", "green chemistry" or zooming further in "beekeeping".
 
 Initially, we tried to leverage unsupervised learning algorithms such as topic modelling and clustering to find the thematic areas of our portfolio and query it accordingly. This, however, did not bring the desired level of reliability and accuracy. In order to overcome this problem we worked on establishing a comprehensive, in-depth taxonomy that allows us to cover the portfolio in granularity. By consulting each thematic team we manually labelled our portfolio with hundreds of categories to cover as much information as possible.
 
