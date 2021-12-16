@@ -174,7 +174,7 @@ if app_selection == '':
     container_5 = st.empty()
     container_6 = st.empty()
     
-    with container_1.beta_container():
+    with container_1.container():
         st.write('## Explore the portfolio with new taxonomy:')
         options = st.multiselect('Select categories from the taxonomy:', 
                                               to_match_targets, format_func=lambda x: 'Select a category' if x == '' else x)
@@ -247,7 +247,7 @@ if app_selection == 'ML Classification':
     container_5 = st.empty()
     container_6 = st.empty()
     
-    with container_2.beta_container():
+    with container_2.container():
         
         st.write('## Frontend Application that takes text as input and outputs classification decision.')
         
@@ -274,7 +274,7 @@ if app_selection == 'ML Classification':
         if text_input != '':
             placeholder = st.empty()
             
-            with placeholder.beta_container():
+            with placeholder.container():
                 with st.spinner('Load Models and Predict...'):
                     
                     for category in categories:
@@ -434,7 +434,7 @@ if app_selection == 'Neural Structured Search':
     container_5 = st.empty()   
     container_6 = st.empty()
     
-    with container_3.beta_container():
+    with container_3.container():
         st.write('## Explore the portfolio using neural semantic search and the new taxonomy')
         model_selection = st.sidebar.selectbox('Choose Semantic Search model:', ('ROBERTA - Contextual Embeddings', 
                                                                                  'Fuzzy Elastic Search'))
@@ -475,7 +475,7 @@ if app_selection == 'Neural Structured Search':
                     filters.append(condition)
                 f = '{0[0]} == {0[1]}'.format
                 
-                col1, col2 = st.beta_columns(2)
+                col1, col2 = st.columns(2)
                 and_search = col1.checkbox(label='AND', value = False)            
                 if and_search:                
                     result_df = df_targets.query(' & '.join(f(t) for t in filters))
@@ -521,7 +521,7 @@ if app_selection == 'Elastic Search':
     container_5 = st.empty()
     container_6 = st.empty()
     
-    with container_4.beta_container():
+    with container_4.container():
         
 
         input_query = st.text_input('Please Input your Text:')
@@ -567,7 +567,7 @@ if app_selection == "Zero-Shot Classification":
     container_4 = st.empty()
     container_6 = st.empty()
     
-    with container_5.beta_container():
+    with container_5.container():
         st.write("Try unsupervised text classification leveraging state-of-the-Art language models. WARNING: SLOW")
         sequence = st.text_input('Please Specify your sentence/text:')
         
@@ -618,7 +618,7 @@ if app_selection == "Neural Question Answering":
     container_4 = st.empty()
     container_5 = st.empty()       
     
-    with container_6.beta_container():
+    with container_6.container():
         st.header("Try Neural Question Answering.")
         returns = st.sidebar.slider('Maximal number of answer suggestions:', 1, 10, 5)
 #        examples=["", 
