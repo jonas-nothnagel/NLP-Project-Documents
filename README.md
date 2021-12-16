@@ -46,7 +46,7 @@ The Machine Learning part comes at a later step now. We are using the labeled po
 ## Installation
 Please use Python <= 3.7 to ensure working protocols.
 
-Clone the repo from github or from Azure to your local machine:
+Clone the repo from github or from Azure to your local machine and cd to the target directory
 
 Example command:
 ```
@@ -58,7 +58,19 @@ python3.7 -m venv venv
 source venv/bin/activate
 pip install --upgrade pip setuptools
 pip install -r requirements.txt
+pip install streamlit 
 ```
+
+For using Conda environment you may run:
+```
+conda create -n nce python=3.7  
+conda activate nce
+conda install pip
+pip install --upgrade pip setuptools
+pip install -r requirements.txt
+pip install streamlit 
+```
+
 On the first run, the app will download several GBs ob pre-trained transformer models and will store them on your local system. 
 To start the application, navigate to the streamlit folder and simply run:
 ```
