@@ -16,6 +16,8 @@ import numpy as np
 import string  
 import nltk 
 #nltk.download('all')
+# nltk.download('stopwords')
+# nltk.download('punkt')
 from stop_words import get_stop_words
 from nltk.stem.porter import PorterStemmer
 import re
@@ -51,8 +53,7 @@ else:
 nlp = spacy.load("en_core_web_sm", disable=["parser", "ner", "textcat"])
 sp = spacy.load("en_core_web_sm", disable=["parser", "ner", "textcat"])
 
-nltk.download('stopwords')
-nltk.download('punkt')
+
 
 
 # spacy (362 words)
